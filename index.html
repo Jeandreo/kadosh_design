@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="Kadosh Design - A maior biblioteca digital de artes cristãs para designers e igrejas. Acesse milhares de arquivos PSD editáveis, flyers e posts." />
+    <meta name="keywords" content="design cristão, artes para igrejas, psd gospel, flyers culto, social media igreja, kadosh design" />
+    <meta name="author" content="Kadosh Design" />
+    <meta name="theme-color" content="#181A1B" />
+    <title>Kadosh Design | Biblioteca Digital de Artes Cristãs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#576063',
+              secondary: '#BFC5C7',
+              background: '#181A1B',
+              surface: '#202324',
+              border: '#2C3032',
+              'text-main': '#E8EAED',
+              'text-muted': '#9AA0A6'
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+          },
+        },
+      };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --header-height: 96px;
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #181A1B;
+        color: #E8EAED;
+        overscroll-behavior-y: none;
+      }
+      @media screen and (max-width: 768px) {
+        input, select, textarea {
+          font-size: 16px !important;
+        }
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #181A1B; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #576063; 
+        border-radius: 5px;
+        border: 2px solid #181A1B;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #BFC5C7;
+      }
+      @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+      }
+      .skeleton {
+        background: linear-gradient(90deg, #202324 25%, #2C3032 50%, #202324 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite linear;
+      }
+      .hover-divine-glow {
+        transition: color 0.3s ease, text-shadow 0.3s ease;
+      }
+      .hover-divine-glow:hover {
+        color: #ffffff !important;
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.25);
+      }
+      .category-nav {
+        height: 56px; 
+        padding: 0;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+      }
+      .main-grid {
+        column-count: 2; 
+        column-gap: 1rem;
+      }
+      @media (min-width: 640px) {
+        .main-grid {
+          column-count: 3;
+          column-gap: 1.5rem;
+        }
+      }
+      @media (min-width: 1024px) {
+        .main-grid {
+          column-count: 4;
+        }
+      }
+      /* Ensure masonry items don't break */
+      .break-inside-avoid {
+        break-inside: avoid;
+        -webkit-column-break-inside: avoid;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "express": "https://esm.sh/express@^5.2.1",
+    "firebase/": "https://esm.sh/firebase@^12.7.0/",
+    "mysql2/": "https://esm.sh/mysql2@^3.16.0/",
+    "jsonwebtoken": "https://esm.sh/jsonwebtoken@^9.0.3",
+    "dotenv": "https://esm.sh/dotenv@^17.2.3",
+    "bcryptjs": "https://esm.sh/bcryptjs@^3.0.3",
+    "crypto": "https://esm.sh/crypto@^1.0.1",
+    "mercadopago": "https://esm.sh/mercadopago@^2.11.0",
+    "multer": "https://esm.sh/multer@^2.0.2",
+    "url": "https://esm.sh/url@^0.11.4",
+    "fs": "https://esm.sh/fs@^0.0.1-security",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "cors": "https://esm.sh/cors@^2.8.5",
+    "path": "https://esm.sh/path@^0.12.7",
+    "@mercadopago/sdk-react": "https://esm.sh/@mercadopago/sdk-react@^1.0.6"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
