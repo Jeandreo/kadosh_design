@@ -575,7 +575,7 @@ app.get('/api/categories', checkDb, async (req, res) => {
 
 app.post('/api/categories', checkDb, async (req, res) => {
     try {
-        await pool.query('INSERT INTO categories (id, name, slug) VALUES (?,?,?)', [crypto.randomUUID(), 'Teste', 'test']);
+        await pool.query('INSERT INTO categories (id, name, slug) VALUES (?,?,?)', [crypto.randomUUID(), req.body.name, req.body.name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')]);
         res.json({ success: true });
     } catch(e) { res.status(500).send(); }
 });

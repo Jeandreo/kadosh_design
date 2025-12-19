@@ -45,7 +45,6 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   }
 
   try {
-    console.log(url, config);
     const response = await fetch(url, config);
     
     if (!response.ok) {
