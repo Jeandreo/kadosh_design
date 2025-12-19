@@ -6,7 +6,7 @@ import { Toast } from './Toast';
 import { useAuth } from '../contexts/AuthContext';
 import { CONFIG } from '../config';
 import { api } from '../services/api';
-import { createCategory } from '../services/categoryService';
+import { createCategory, deleteCategory } from '../services/categoryService';
 
 // --- Minimalist SVG Line Chart Component ---
 const DualLineChart = () => {
@@ -563,7 +563,7 @@ export const AdminDashboard: React.FC = () => {
 
     try {
         const created = await createCategory(newCatName);
-        refreshCategories([...categories, created]);
+        refreshCategories();
         setNewCatName('');
         showFeedback('Categoria criada com sucesso!');
     } catch (e: any) {
@@ -576,18 +576,21 @@ export const AdminDashboard: React.FC = () => {
     const updated = categories.map(c => 
         c.id === id ? { ...c, name: newName, slug: newName.toLowerCase().replace(/\s+/g, '-') } : c
     );
-    refreshCategories(updated);
+    refreshCategories();
     setEditingCatId(null);
     showFeedback("Categoria atualizada!");
   };
 
-  const handleDeleteCategory = (id: string) => {
-      if(confirm("Tem certeza? Isso pode afetar arquivos existentes nesta categoria.")) {
-          const updated = categories.filter(c => c.id !== id);
-          refreshCategories(updated);
-          showFeedback("Categoria removida!", 'info');
-      }
-  };
+  const handleDeleteCategory = async (id: string) => {
+    if (!confirm('Tem certeza? Isso pode afetar arquivos existentes.')) return;
+    try {
+        await deleteCategory(id);
+        refreshCategories();
+        showFeedback('Categoria removida!', 'info');
+    } catch (e) {
+        showFeedback('Erro ao remover categoria', 'error');
+    }
+};
 
   // --- Banner Management Logic ---
   const handleEditBanner = (banner: Banner) => {

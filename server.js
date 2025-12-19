@@ -580,6 +580,23 @@ app.post('/api/categories', checkDb, async (req, res) => {
     } catch(e) { res.status(500).send(); }
 });
 
+app.delete('/api/categories/:id', checkDb, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await pool.query(
+            'DELETE FROM categories WHERE id = ?',
+            [id]
+        );
+
+        res.json({ success: true });
+    } catch (e) {
+        console.error(e);
+        res.status(500).json({ message: 'Erro ao deletar categoria' });
+    }
+});
+
+
 app.get('/api/banners', checkDb, async (req, res) => {
     try {
         const [rows] = await pool.query('SELECT * FROM banners ORDER BY display_order ASC');
