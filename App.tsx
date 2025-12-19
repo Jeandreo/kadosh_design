@@ -16,16 +16,16 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import './styles/admin.css';
 
 
-const Pricing = lazy(() => import('./components/Pricing').then(module => ({ default: module.Pricing })));
-const About = lazy(() => import('./components/About').then(module => ({ default: module.About })));
-const Contact = lazy(() => import('./components/Contact').then(module => ({ default: module.Contact })));
-const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard').then(module => ({ default: module.AdminDashboard })));
-const UserDashboard = lazy(() => import('./components/UserDashboard').then(module => ({ default: module.UserDashboard })));
-const Terms = lazy(() => import('./components/Terms').then(module => ({ default: module.Terms })));
-const CheckoutModal = lazy(() => import('./components/CheckoutModal').then(module => ({ default: module.CheckoutModal })));
-const AuthModal = lazy(() => import('./components/AuthModal').then(module => ({ default: module.AuthModal })));
-const ProductModal = lazy(() => import('./components/ProductModal').then(module => ({ default: module.ProductModal }))); 
-const NotFound = lazy(() => import('./components/NotFound').then(module => ({ default: module.NotFound })));
+const Pricing         = lazy(() => import('./components/Pricing').then(module => ({ default: module.Pricing })));
+const About           = lazy(() => import('./components/About').then(module => ({ default: module.About })));
+const Contact         = lazy(() => import('./components/Contact').then(module => ({ default: module.Contact })));
+const AdminDashboard  = lazy(() => import('./components/admin/AdminDashboard').then(module => ({ default: module.AdminDashboard })));
+const UserDashboard   = lazy(() => import('./components/UserDashboard').then(module => ({ default: module.UserDashboard })));
+const Terms           = lazy(() => import('./components/Terms').then(module => ({ default: module.Terms })));
+const CheckoutModal   = lazy(() => import('./components/CheckoutModal').then(module => ({ default: module.CheckoutModal })));
+const AuthModal       = lazy(() => import('./components/AuthModal').then(module => ({ default: module.AuthModal })));
+const ProductModal    = lazy(() => import('./components/ProductModal').then(module => ({ default: module.ProductModal }))); 
+const NotFound        = lazy(() => import('./components/NotFound').then(module => ({ default: module.NotFound })));
 
 type Page = 'home' | 'pricing' | 'about' | 'contact' | 'admin' | 'user-dashboard' | 'terms' | '404';
 type SortOption = 'recent' | 'oldest' | 'popular';
