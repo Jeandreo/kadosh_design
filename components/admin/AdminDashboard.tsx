@@ -137,6 +137,7 @@ export const AdminDashboard = () => {
       setCanvaUrl('');
       setEditingId(null);
       setIsUploadModalOpen(true);
+      console.log(123);
   };
 
   const openEditModal = (resource: DesignResource) => {
@@ -150,11 +151,9 @@ export const AdminDashboard = () => {
       setZipFileName(resource.downloadUrl ? resource.downloadUrl.split('/').pop() || 'arquivo_existente.zip' : '');
       setResourceType(resource.format === 'CANVA' ? 'PSD' : resource.format); 
       setOrientation(resource.orientation);
-      
       setNewResolution(resource.resolution || '200 DPI');
       setNewDimensions(resource.dimensions || '');
       setNewFileSize(resource.fileSize || '');
-
       setIsPremium(resource.premium);
       setIsCanvaAvailable(resource.canvaAvailable || false);
       setCanvaUrl(resource.canvaUrl || '');
@@ -633,9 +632,6 @@ export const AdminDashboard = () => {
     await refreshCategories();
   };
   
-
-
-
   const [uploadOpen, setUploadOpen] = useState(false);
 
   const adminData = useAdminData();
@@ -648,7 +644,7 @@ export const AdminDashboard = () => {
         user={user}
         activeTab={activeTab}
         onChangeTab={setActiveTab}
-        onNewUpload={() => setUploadOpen(true)}
+        openUploadModal={() => openUploadModal()}
       />
 
     <main className="flex-1 md:ml-64">
@@ -691,7 +687,7 @@ export const AdminDashboard = () => {
         )}
 
       </main>
-      {uploadOpen && (
+      {isUploadModalOpen && (
         <UploadModal
           isEditMode={isEditMode}
           categories={categories}
@@ -724,7 +720,7 @@ export const AdminDashboard = () => {
           handleZipUpload={handleZipUpload}
           handleUploadSubmit={handleUploadSubmit}
           generateDemoContent={generateDemoContent}
-          onClose={() => setUploadOpen(false)}
+          onClose={() => setIsUploadModalOpen(false)}
         />
       )}
     </div>

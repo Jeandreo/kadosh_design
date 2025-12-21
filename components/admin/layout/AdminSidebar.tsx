@@ -4,14 +4,14 @@ interface Props {
   user: User;
   activeTab: string;
   onChangeTab: (tab: string) => void;
-  onNewUpload: () => void;
+  openUploadModal: () => void;
 }
 
 export const AdminSidebar = ({
   user,
   activeTab,
   onChangeTab,
-  onNewUpload,
+  openUploadModal,
 }: Props) => {
   return (
     <aside className="w-64 bg-[#181A1B] border-r border-white/5 fixed h-full flex flex-col z-30 hidden md:flex">
@@ -31,7 +31,7 @@ export const AdminSidebar = ({
       {/* CTA */}
       <div className="p-4">
         <button
-          onClick={onNewUpload}
+          onClick={openUploadModal}
           className="w-full bg-gradient-to-r from-blue-600 to-blue-500
                      hover:from-blue-500 hover:to-blue-400
                      text-white font-bold py-3 rounded-lg

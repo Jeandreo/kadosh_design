@@ -100,7 +100,7 @@ export const UploadModal = ({
                         </button>
                     )}
                 </div>
-                <button onClick={() => setIsUploadModalOpen(false)} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-muted hover:text-white transition-colors">
+                <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-text-muted hover:text-white transition-colors">
                     <i className="fas fa-times text-xl"></i>
                 </button>
             </div>
