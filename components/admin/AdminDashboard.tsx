@@ -29,6 +29,22 @@ export const AdminDashboard = () => {
   const handleChangeUserPlan = async (banner: Banner) => {
   };
 
+  const handleCreateCategory = async (name: string) => {
+    await createCategory(name);
+    await refreshCategories();
+  };
+  
+  const handleUpdateCategory = async (id: string, name: string) => {
+    await updateCategory(id, name);
+    await refreshCategories();
+  };
+  
+  const handleDeleteCategory = async (id: string) => {
+    await deleteCategory(id);
+    await refreshCategories();
+  };
+  
+
 
 
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -62,7 +78,13 @@ export const AdminDashboard = () => {
         )}
  
         {activeTab === 'categories' && (
-          <CategoriesView {...adminData} categories={categories} onCreate={createCategory} onUpdate={updateCategory} onDelete={deleteCategory} />
+          <CategoriesView
+            {...adminData}
+            categories={categories}
+            onCreate={handleCreateCategory}
+            onUpdate={handleUpdateCategory}
+            onDelete={handleDeleteCategory}
+          />
         )}
 
         {activeTab === 'banners' && (
