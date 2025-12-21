@@ -17,7 +17,6 @@ import { DesignResource, Category, Banner, User, UserPlan } from '../../types';
 
 export const AdminDashboard = () => {
 
-
   const { user, categories, refreshCategories, banners, refreshBanners } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -631,8 +630,6 @@ export const AdminDashboard = () => {
     await deleteCategory(id);
     await refreshCategories();
   };
-  
-  const [uploadOpen, setUploadOpen] = useState(false);
 
   const adminData = useAdminData();
 
