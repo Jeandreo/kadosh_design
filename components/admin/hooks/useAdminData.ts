@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getResources, getUsers } from '../../../services/resourceService';
+import { getResources } from '../../../services/resourceService';
+import { getUsers } from '../../../services/userService';
 import { DesignResource, User } from '../../../types';
 
 export const useAdminData = () => {

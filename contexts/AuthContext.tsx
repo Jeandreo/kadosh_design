@@ -1,8 +1,14 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, UserRole, UserPlan, Notification, Category, Banner } from '../types';
-import { getCategories, getBanners, saveCategory, saveBanners } from '../services/resourceService';
 import { loginRequest, signupRequest } from '../services/authService';
+import { getResources } from '../services/resourceService';
+import { getUsers } from '../services/userService';
+import { getBanners } from '../services/bannerService';
+import { getCategories } from '../services/categoriesService';
+
+
+
 
 // import { MOCK_USERS } from '../services/mockData';
 
@@ -209,7 +215,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const refreshBanners = (bans: Banner[]) => {
       setBanners(bans);
-      saveBanners(bans);
+      // saveBanners(bans);
   };
 
   return (

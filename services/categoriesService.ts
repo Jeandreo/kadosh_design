@@ -1,6 +1,11 @@
 import { api } from './api';
 import { Category } from '../types';
 
+
+export const getCategories = async (): Promise<Category[]> => {
+    return api.get('/categories');
+};
+
 export const fetchCategories = () =>
   api.get<Category[]>('/categories');
 

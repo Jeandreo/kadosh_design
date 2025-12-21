@@ -10,8 +10,9 @@ import { UsersView } from './users/UsersView';
 import { useAdminData } from './hooks/useAdminData';
 import { UploadModal } from './modals/UploadModal';
 import { api } from '../../services/api';
-import { createCategory, deleteCategory, updateCategory } from '../../services/categoryService';
-import { addResource, getResources, updateResource, deleteResource, getUsers, updateUserPlan, saveCategory, saveBanners } from '../../services/resourceService';
+import { createCategory, deleteCategory, updateCategory } from '../../services/categoriesService';
+import { addResource, getResources, updateResource, deleteResource } from '../../services/resourceService';
+import { getUsers, updateUserPlan } from '../../services/userService';
 import { DesignResource, Category, Banner, User, UserPlan } from '../../types';
 
 
@@ -392,7 +393,7 @@ export const AdminDashboard = () => {
     }
   };
 
-  const handleUploadSubmit = (e: React.FormEvent) => {
+  const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newImageUrl) {
         showFeedback("Por favor, selecione uma imagem para a capa.", 'error');
@@ -432,7 +433,7 @@ export const AdminDashboard = () => {
             dimensions: newDimensions,
             fileSize: newFileSize
         };
-        updateResource(updatedProduct);
+        await updateResource(updatedProduct);
         showFeedback("Arte atualizada com sucesso!");
     } else {
         const newProduct: DesignResource = {
@@ -455,7 +456,7 @@ export const AdminDashboard = () => {
             dimensions: newDimensions,
             fileSize: newFileSize
         };
-        addResource(newProduct);
+        await addResource(newProduct);
         showFeedback("Arte publicada com sucesso!");
     }
 

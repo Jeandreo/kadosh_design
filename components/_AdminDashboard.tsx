@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { DesignResource, Category, Banner, User, UserPlan } from '../types';
-import { addResource, getResources, updateResource, deleteResource, getUsers, updateUserPlan, saveCategory, saveBanners } from '../services/resourceService';
+import { addResource, getResources, updateResource, deleteResource } from '../services/resourceService';
+import { getUsers, updateUserPlan } from '../services/userService';
 import { Toast } from './Toast';
 import { useAuth } from '../contexts/AuthContext';
 import { CONFIG } from '../config';
 import { api } from '../services/api';
-import { createCategory, deleteCategory } from '../services/categoryService';
+import { createCategory, deleteCategory } from '../services/categoriesService';
 
 // --- Minimalist SVG Line Chart Component ---
 const DualLineChart = () => {

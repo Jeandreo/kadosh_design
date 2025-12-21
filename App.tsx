@@ -9,10 +9,10 @@ import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 import { Pagination } from './components/Pagination';
 import { FilterSidebar } from './components/FilterSidebar';
-import { fetchResourcesFromFirebase } from './services/resourceService'; 
 import { ResourceType, DesignResource } from './types';
 import { useAuth } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { getResources } from './services/resourceService';
 import './styles/admin.css';
 
 
@@ -75,19 +75,19 @@ function App() {
 
   useEffect(() => {
     const loadResources = async () => {
+      try {
         setIsLoading(true);
-        const data = await fetchResourcesFromFirebase();
-        
-        const processedData = data.map((item, index) => ({
-            ...item,
-            createdAt: item.createdAt || new Date(Date.now() - index * 86400000).toISOString() 
-        }));
-
-        setAllResources(processedData);
+        const data = await getResources(); // BACKEND REAL
+        setAllResources(data);
+      } catch (e) {
+        console.error('Erro ao carregar recursos', e);
+      } finally {
         setIsLoading(false);
+      }
     };
+  
     loadResources();
-  }, []); 
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('lastPage', currentPageState);
@@ -128,13 +128,7 @@ function App() {
     window.scrollTo(0, 0);
     
     if (page === 'home') {
-        fetchResourcesFromFirebase().then((data) => {
-             const processedData = data.map((item, index) => ({
-                ...item,
-                createdAt: item.createdAt || new Date(Date.now() - index * 86400000).toISOString()
-            }));
-            setAllResources(processedData);
-        });
+      getResources().then(setAllResources);
     }
   };
 
