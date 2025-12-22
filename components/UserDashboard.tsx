@@ -104,14 +104,23 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
-      e.preventDefault();
+    e.preventDefault();
+  
+    try {
       setIsSaving(true);
       await updateProfile(editName, editEmail);
-      setIsSaving(false);
+  
       setToastMessage("Dados atualizados com sucesso!");
       setToastType('success');
+    } catch (err: any) {
+      setToastMessage(err.message || 'Erro ao atualizar perfil');
+      setToastType('error');
+    } finally {
+      setIsSaving(false);
       setShowToast(true);
+    }
   };
+  
 
   const handleRedownload = async (resourceId: string, title: string) => {
       const result = await registerDownload(resourceId);

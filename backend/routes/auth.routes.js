@@ -85,4 +85,57 @@ router.get('/me', checkDb, async (req, res) => {
   }
 });
 
+router.put('/profile', checkDb, async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Token não fornecido' });
+  }
+
+  const token = authHeader.split(' ')[1];
+  const { name, email } = req.body;
+
+  if (!name || !email) {
+    return res.status(400).json({ message: 'Nome e e-mail são obrigatórios' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    // Verifica se o email já pertence a outro usuário
+    const [emailRows] = await pool.query(
+      'SELECT id FROM users WHERE email = ? AND id != ?',
+      [email, decoded.id]
+    );
+
+    if (emailRows.length > 0) {
+      return res.status(400).json({ message: 'Este e-mail já está em uso' });
+    }
+
+    // Atualiza dados
+    await pool.query(
+      'UPDATE users SET name = ?, email = ? WHERE id = ?',
+      [name, email, decoded.id]
+    );
+
+    // Busca usuário atualizado
+    const [rows] = await pool.query(
+      'SELECT * FROM users WHERE id = ?',
+      [decoded.id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    let user = rows[0];
+    user = await checkQuotaReset(user);
+    const userData = await formatUserResponse(user);
+
+    return res.json({ user: userData });
+  } catch (error) {
+    return res.status(401).json({ message: 'Token inválido ou expirado' });
+  }
+});
+
+
 export default router;

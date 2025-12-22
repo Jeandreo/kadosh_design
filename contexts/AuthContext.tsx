@@ -1,16 +1,9 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User, UserRole, UserPlan, Notification, Category, Banner } from '../types';
-import { loginRequest, signupRequest } from '../services/authService';
-import { getResources } from '../services/resourceService';
-import { getUsers } from '../services/userService';
+import { User, UserPlan, Notification, Category, Banner } from '../types';
+import { signupRequest, updateProfileRequest } from '../services/authService';
 import { getBanners } from '../services/bannerService';
 import { getCategories } from '../services/categoriesService';
-
-
-
-
-// import { MOCK_USERS } from '../services/mockData';
 
 interface AuthContextType {
   user: User | null;
@@ -20,7 +13,6 @@ interface AuthContextType {
   categories: Category[]; 
   banners: Banner[]; 
   login: (email: string, password: string) => Promise<boolean>;
-  // loginAsMock: (role: 'admin' | 'member' | 'vip') => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<boolean>;
   loginWithGoogle: () => Promise<boolean>;
   logout: () => void;
@@ -89,7 +81,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       loadStaticData();
   }, []);
 
-  // --- MOCK AUTHENTICATION ---
   const API_URL = 'http://localhost:3001';
   const login = async (email: string, password: string) => {
     const res = await fetch(`${API_URL}/api/auth/login`, {
@@ -106,18 +97,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return true;
   };
 
-  /* const loginAsMock = async (role: 'admin' | 'member' | 'vip') => {
-      let mockUser;
-      if (role === 'admin') mockUser = MOCK_USERS.find(u => u.role === 'admin');
-      else if (role === 'vip') mockUser = MOCK_USERS.find(u => u.plan === 'ministry');
-      else mockUser = MOCK_USERS.find(u => u.plan === 'free');
-
-      if (mockUser) {
-          setUser(mockUser);
-          localStorage.setItem('kadosh_mock_user', JSON.stringify(mockUser));
-      }
-  }; */
-
   const signup = async (
     name: string,
     email: string,
@@ -126,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       const { token, user } = await signupRequest(name, email, password);
 
-      localStorage.setItem('token', token);
+      localStorage.setItem('auth_token', token);
       setUser(user);
 
       return true;
@@ -195,11 +174,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateProfile = async (name: string, email: string) => {
-      if (!user) return;
-      const updatedUser = { ...user, name, email };
-      setUser(updatedUser);
-      localStorage.setItem('kadosh_mock_user', JSON.stringify(updatedUser));
+    if (!user) return;
+  
+    const token = localStorage.getItem('auth_token');
+    if (!token) throw new Error('Usuário não autenticado');
+  
+    const updatedUser = await updateProfileRequest(name, email, token);
+  
+    setUser(updatedUser);
   };
+  
 
   const markAllNotificationsAsRead = () => setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   const addNotification = (n: Omit<Notification, 'id' | 'read' | 'date'>) => setNotifications(p => [{ ...n, id: Date.now().toString(), read: false, date: 'Agora' }, ...p]);
@@ -227,7 +211,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         categories,
         banners,
         login, 
-        // loginAsMock,
         signup,
         loginWithGoogle,
         logout, 
