@@ -14,6 +14,7 @@ import { createCategory, deleteCategory, updateCategory } from '../../services/c
 import { addResource, getResources, updateResource, deleteResource } from '../../services/resourceService';
 import { getUsers, updateUserPlan } from '../../services/userService';
 import { DesignResource, Category, Banner, User, UserPlan } from '../../types';
+import { Toast } from '../Toast';
 
 
 export const AdminDashboard = () => {
@@ -137,7 +138,6 @@ export const AdminDashboard = () => {
       setCanvaUrl('');
       setEditingId(null);
       setIsUploadModalOpen(true);
-      console.log(123);
   };
 
   const openEditModal = (resource: DesignResource) => {
@@ -394,6 +394,7 @@ export const AdminDashboard = () => {
   };
 
   const handleUploadSubmit = async (e: React.FormEvent) => {
+    console.log(selectedCategories.length === 0);
     e.preventDefault();
     if (!newImageUrl) {
         showFeedback("Por favor, selecione uma imagem para a capa.", 'error');
@@ -412,7 +413,6 @@ export const AdminDashboard = () => {
 
     if (isEditMode && editingId) {
         const originalResource = fileList.find(r => r.id === editingId);
-        
         const updatedProduct: DesignResource = {
             id: editingId,
             title: newTitle,
@@ -656,7 +656,11 @@ export const AdminDashboard = () => {
         )}
 
         {activeTab === 'files' && (
-          <FilesView {...adminData} onEdit={() => {}} onDelete={() => {}} />
+            <FilesView
+                files={sortedFiles}
+                openEditModal={openEditModal}
+                onDelete={openDeleteModal}
+            />
         )}
  
         {activeTab === 'categories' && (
@@ -683,6 +687,7 @@ export const AdminDashboard = () => {
             onChangePlan={handleChangeUserPlan}
           />
         )}
+        <Toast message={toastMessage} isVisible={showToast} onClose={() => setShowToast(false)} type={toastType} />
 
       </main>
       {isUploadModalOpen && (

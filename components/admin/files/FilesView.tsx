@@ -3,13 +3,13 @@ import { DesignResource } from '../../../types';
 
 interface Props {
   files: DesignResource[];
-  onEdit: (file: DesignResource) => void;
+  openEditModal: (file: DesignResource) => void;
   onDelete: (id: string) => void;
 }
 
 export const FilesView = ({
   files,
-  onEdit,
+  openEditModal,
   onDelete,
 }: Props) => {
   const [search, setSearch] = useState('');
@@ -102,7 +102,7 @@ export const FilesView = ({
 
                   <td className="px-3 md:px-6 py-3 text-right whitespace-nowrap">
                     <button
-                      onClick={() => onEdit(file)}
+                      onClick={() => openEditModal(file)}
                       className="
                         text-text-muted hover:text-white
                         p-2 hover:bg-white/10

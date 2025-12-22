@@ -264,6 +264,18 @@ function App() {
   };
 
   if (currentPageState === 'admin') {
+
+    if (!user) {
+      // sessão morreu
+      setCurrentPageState('home');
+      return null;
+    }
+  
+    if (user.role !== 'admin') {
+      setCurrentPageState('home');
+      return null;
+    }
+
       return (
         <ErrorBoundary>
           <Suspense fallback={<LoadingFallback />}>

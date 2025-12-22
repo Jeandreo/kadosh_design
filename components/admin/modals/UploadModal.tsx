@@ -1,56 +1,5 @@
 import { Category } from '../../../types';
 
-interface UploadModalProps {
-  isEditMode: boolean;
-
-  categories: Category[];
-
-  newTitle: string;
-  setNewTitle: (v: string) => void;
-
-  selectedCategories: string[];
-  toggleCategory: (name: string) => void;
-
-  keywords: string;
-  setKeywords: (v: string) => void;
-
-  resourceType: string;
-  setResourceType: (v: string) => void;
-
-  orientation: string;
-  setOrientation: (v: string) => void;
-
-  newDimensions: string;
-  setNewDimensions: (v: string) => void;
-
-  newResolution: string;
-  setNewResolution: (v: string) => void;
-
-  newFileSize: string;
-  setNewFileSize: (v: string) => void;
-
-  isPremium: boolean;
-  setIsPremium: (v: boolean) => void;
-
-  isCanvaAvailable: boolean;
-  setIsCanvaAvailable: (v: boolean) => void;
-
-  canvaUrl: string;
-  setCanvaUrl: (v: string) => void;
-
-  newImageUrl: string;
-  newWatermarkImageUrl?: string;
-
-  zipFileName: string;
-
-  handleCoverUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleZipUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleUploadSubmit: (e: React.FormEvent) => void;
-
-  generateDemoContent: () => void;
-  onClose: () => void;
-}
-
 export const UploadModal = ({
   isEditMode,
   categories,
@@ -84,7 +33,7 @@ export const UploadModal = ({
   handleUploadSubmit,
   generateDemoContent,
   onClose,
-}: UploadModalProps) => {
+}) => {
   return (
     <div className="fixed inset-0 z-[100] bg-[#121212] animate-[fadeIn_0.2s_ease-out] overflow-y-auto">
         <div className="max-w-7xl mx-auto p-4 md:p-8 min-h-screen flex flex-col">
