@@ -4,13 +4,13 @@ import { DesignResource } from '../../../types';
 interface Props {
   files: DesignResource[];
   openEditModal: (file: DesignResource) => void;
-  onDelete: (id: string) => void;
+  openDeleteModal: (id: string) => void;
 }
 
 export const FilesView = ({
   files,
   openEditModal,
-  onDelete,
+  openDeleteModal,
 }: Props) => {
   const [search, setSearch] = useState('');
 
@@ -113,7 +113,7 @@ export const FilesView = ({
                     </button>
 
                     <button
-                      onClick={() => onDelete(file.id)}
+                      onClick={() => openDeleteModal(file.id)}
                       className="
                         text-text-muted hover:text-red-400
                         p-2 hover:bg-red-500/10

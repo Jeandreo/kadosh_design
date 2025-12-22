@@ -54,6 +54,18 @@ export const BannersView = ({
           {banners.map((b, index) => (
             <div
               key={b.id}
+              onClick={() => {
+                setEditingId(b.id);
+                setForm({
+                  id: b.id,
+                  title: b.title,
+                  subtitle: b.subtitle,
+                  cta: b.cta,
+                  image: b.image,
+                  category: b.category,
+                  order: b.order,
+                });
+              }}
               className={`
                 bg-[#1e1e1e] border rounded-xl overflow-hidden cursor-pointer
                 ${editingId === b.id ? 'border-blue-500' : 'border-white/5'}

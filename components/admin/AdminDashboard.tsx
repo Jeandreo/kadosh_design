@@ -610,7 +610,7 @@ export const AdminDashboard = () => {
             <FilesView
                 files={sortedFiles}
                 openEditModal={openEditModal}
-                onDelete={openDeleteModal}
+                openDeleteModal={openDeleteModal}
             />
         )}
  
@@ -642,6 +642,26 @@ export const AdminDashboard = () => {
             onChangePlan={handleChangeUserPlan}
           />
         )}
+
+        {isDeleteModalOpen && (
+            <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={() => setIsDeleteModalOpen(false)}></div>
+                    <div className="relative w-full max-w-sm bg-surface rounded-xl border border-white/10 p-6 shadow-2xl animate-[scaleIn_0.2s_ease-out]">
+                    <div className="text-center">
+                        <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i className="fas fa-trash text-red-500 text-2xl"></i>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Excluir Arte?</h3>
+                        <p className="text-text-muted text-sm mb-6">Tem certeza que deseja excluir? Essa ação não pode ser desfeita.</p>
+                        <div className="flex gap-3">
+                            <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white rounded-lg font-medium transition-colors">Cancelar</button>
+                            <button onClick={confirmDelete} className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold transition-colors">Excluir</button>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        )}
+
         <Toast message={toastMessage} isVisible={showToast} onClose={() => setShowToast(false)} type={toastType} />
 
       </main>
