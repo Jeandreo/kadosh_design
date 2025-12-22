@@ -9,9 +9,14 @@ const checkDb = createCheckDb(pool);
 router.get('/', checkDb, async (req, res) => {
   try {
     const [rows] = await pool.query(
-      `SELECT id, name, email, role, plan,
-              quota_used, quota_total, subscription_expiry
-       FROM users`
+      `
+      SELECT id, name, email, role, plan,
+             quota_used, quota_total, subscription_expiry
+      FROM users
+      ORDER BY 
+        CASE WHEN role = 'admin' THEN 0 ELSE 1 END,
+        name ASC
+      `
     );
     res.json(rows);
   } catch {
@@ -19,7 +24,8 @@ router.get('/', checkDb, async (req, res) => {
   }
 });
 
-router.patch('/:id/plan', checkDb, async (req, res) => {
+
+router.put('/:id/plan', checkDb, async (req, res) => {
   const { id } = req.params;
   const { plan } = req.body;
 

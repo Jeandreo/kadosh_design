@@ -4,7 +4,7 @@ import { pool } from './pool.js';
 export async function seedDefaultUsers() {
     const users = [
         {
-            id: 'admin-1',
+            id: crypto.randomUUID(),
             name: 'Administrador',
             email: 'admin@admin.com',
             password: '123',
@@ -13,7 +13,7 @@ export async function seedDefaultUsers() {
             quota_total: 9999
         },
         {
-            id: 'premium-1',
+            id: crypto.randomUUID(),
             name: 'Assinante Premium',
             email: 'premium@kadosh.com',
             password: 'premium123',
@@ -22,7 +22,7 @@ export async function seedDefaultUsers() {
             quota_total: 7
         },
         {
-            id: 'free-1',
+            id: crypto.randomUUID(),
             name: 'Usuário Grátis',
             email: 'free@kadosh.com',
             password: 'free123',

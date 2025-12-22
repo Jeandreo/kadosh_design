@@ -3,12 +3,12 @@ import { useState } from 'react';
 
 interface Props {
   users: User[];
-  onChangePlan: (userId: string, plan: UserPlan) => void;
+  handlePlanChange: (userId: string, plan: UserPlan) => void;
 }
 
 export const UsersView = ({
   users,
-  onChangePlan,
+  handlePlanChange,
 }: Props) => {
   const [search, setSearch] = useState('');
 
@@ -106,25 +106,26 @@ export const UsersView = ({
 
                     {/* PLAN */}
                     <td className="px-6 py-4 hidden md:table-cell">
-                      <select
-                        value={user.plan}
-                        disabled={isAdmin}
-                        onChange={e =>
-                          onChangePlan(user.id, e.target.value as UserPlan)
-                        }
-                        className={`
-                          bg-black/20 border border-white/10
-                          rounded px-2 py-1 text-xs text-white
-                          outline-none focus:border-blue-500
-                          cursor-pointer
-                          ${isAdmin ? 'opacity-50 cursor-not-allowed' : ''}
-                        `}
-                      >
-                        <option value="free">Grátis</option>
-                        <option value="premium_annual">Premium Anual</option>
-                        <option value="ministry">Ministério</option>
-                        <option value="volunteer">Voluntário</option>
-                      </select>
+                    <select
+                      value={user.plan}
+                      disabled={isAdmin}
+                      onChange={(e) =>
+                        handlePlanChange(user.id, e.target.value as UserPlan)
+                      }
+                      className={`
+                        bg-black/20 border border-white/10
+                        rounded px-2 py-1 text-xs text-white
+                        outline-none focus:border-blue-500
+                        cursor-pointer
+                        ${isAdmin ? 'opacity-50 cursor-not-allowed' : ''}
+                      `}
+                    >
+                      <option value="free">Grátis</option>
+                      <option value="premium_annual">Premium Anual</option>
+                      <option value="ministry">Ministério</option>
+                      <option value="volunteer">Voluntário</option>
+                    </select>
+
                     </td>
 
                     {/* EMAIL */}

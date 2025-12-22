@@ -537,33 +537,7 @@ export const AdminDashboard = () => {
           : <i className="fas fa-sort-down text-xs text-white ml-2"></i>;
   };
 
-  const filteredUsers = Array.isArray(userList) ? userList.filter(u => 
-    u.name.toLowerCase().includes(userSearch.toLowerCase()) || 
-    u.email.toLowerCase().includes(userSearch.toLowerCase())
-  ) : [];
-
   if (!user || user.role !== 'admin') return null;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // Salva umm banner
-  const handleChangeUserPlan = async (banner: Banner) => {
-  };
 
   const handleCreateCategory = async (name: string) => {
     await createCategory(name);
@@ -638,9 +612,9 @@ export const AdminDashboard = () => {
 
         {activeTab === 'users' && (
           <UsersView
-            users={adminData.users}
-            onChangePlan={handleChangeUserPlan}
-          />
+            users={userList}
+            handlePlanChange={handlePlanChange}
+            />
         )}
 
         {isDeleteModalOpen && (
