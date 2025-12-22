@@ -28,7 +28,6 @@ export async function runMigrations() {
             image_url TEXT,
             watermark_image_url TEXT,
             download_url TEXT,
-            category VARCHAR(100),
             tags TEXT,
             search_terms TEXT,
             premium BOOLEAN DEFAULT FALSE,
@@ -50,6 +49,25 @@ export async function runMigrations() {
             id VARCHAR(50) PRIMARY KEY,
             name VARCHAR(100) NOT NULL,
             slug VARCHAR(100) NOT NULL
+        )
+    `);
+
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS resource_categories (
+            resource_id VARCHAR(36) NOT NULL,
+            category_id VARCHAR(50) NOT NULL,
+        
+            PRIMARY KEY (resource_id, category_id),
+        
+            CONSTRAINT fk_rc_resource
+            FOREIGN KEY (resource_id)
+            REFERENCES resources(id)
+            ON DELETE CASCADE,
+        
+            CONSTRAINT fk_rc_category
+            FOREIGN KEY (category_id)
+            REFERENCES categories(id)
+            ON DELETE CASCADE
         )
     `);
     
