@@ -12,7 +12,7 @@ export const addResource = async (resource: DesignResource) => {
     imageUrl: resource.imageUrl,
     watermarkImageUrl: resource.watermarkImageUrl,
     downloadUrl: resource.downloadUrl,
-    category: resource.categories[0],
+    categories: resource.categories,
     tags: resource.tags,
     searchTerms: resource.searchTerms,
     premium: resource.premium,

@@ -9,13 +9,20 @@ const checkDb = createCheckDb(pool);
 
 router.get('/', checkDb, async (req, res) => {
   try {
-    const [rows] = await pool.query(
-      'SELECT * FROM resources ORDER BY created_at DESC'
-    );
+    const [rows] = await pool.query(`
+      SELECT 
+        r.*,
+        GROUP_CONCAT(c.name) AS categories
+      FROM resources r
+      LEFT JOIN resource_categories rc ON rc.resource_id = r.id
+      LEFT JOIN categories c ON c.id = rc.category_id
+      GROUP BY r.id
+      ORDER BY r.created_at DESC
+    `);
 
     const resources = rows.map(r => ({
       ...r,
-      categories: r.category ? [r.category] : [],
+      categories: r.categories ? r.categories.split(',') : [],
       tags: r.tags ? JSON.parse(r.tags) : [],
       searchTerms: r.search_terms,
       imageUrl: r.image_url,
@@ -28,67 +35,101 @@ router.get('/', checkDb, async (req, res) => {
     }));
 
     res.json(resources);
-  } catch {
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Erro ao buscar recursos' });
   }
 });
 
+
 router.post('/', checkDb, async (req, res) => {
-  const resData = req.body;
+  const data = req.body;
+
+  const connection = await pool.getConnection();
 
   try {
-    const id = resData.id || crypto.randomUUID();
-    const tagsJson = JSON.stringify(resData.tags || []);
+    await connection.beginTransaction();
 
-    await pool.query(
+    const resourceId = data.id || crypto.randomUUID();
+    const tagsJson = JSON.stringify(data.tags || []);
+
+    // 1️⃣ Insere resource
+    await connection.query(
       `INSERT INTO resources
        (id, title, image_url, watermark_image_url, download_url,
-        category, tags, search_terms, premium, format, orientation,
+        tags, search_terms, premium, format, orientation,
         downloads, canva_available, canva_url, resolution,
         dimensions, file_size, author)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        id,
-        resData.title,
-        resData.imageUrl,
-        resData.watermarkImageUrl,
-        resData.downloadUrl,
-        resData.categories?.[0],
+        resourceId,
+        data.title,
+        data.imageUrl,
+        data.watermarkImageUrl,
+        data.downloadUrl,
         tagsJson,
-        resData.searchTerms,
-        resData.premium,
-        resData.format,
-        resData.orientation,
+        data.searchTerms,
+        data.premium,
+        data.format,
+        data.orientation,
         0,
-        resData.canvaAvailable,
-        resData.canvaUrl,
-        resData.resolution,
-        resData.dimensions,
-        resData.fileSize,
-        resData.author
+        data.canvaAvailable,
+        data.canvaUrl,
+        data.resolution,
+        data.dimensions,
+        data.fileSize,
+        data.author
       ]
     );
 
+    // Relaciona categorias
+    if (Array.isArray(data.categories)) {
+      for (const categoryName of data.categories) {
+        const [[category]] = await connection.query(
+          'SELECT id FROM categories WHERE name = ?',
+          [categoryName]
+        );
+
+        if (category) {
+          await connection.query(
+            `INSERT INTO resource_categories (resource_id, category_id)
+             VALUES (?, ?)`,
+            [resourceId, category.id]
+          );
+        }
+      }
+    }
+
+    await connection.commit();
     res.status(201).json({ message: 'Recurso criado' });
-  } catch {
-    res.status(500).json({ message: 'Erro ao salvar' });
+
+  } catch (err) {
+    await connection.rollback();
+    console.error(err);
+    res.status(500).json({ message: 'Erro ao salvar recurso' });
+  } finally {
+    connection.release();
   }
 });
 
+
 router.put('/:id', checkDb, async (req, res) => {
   const { id } = req.params;
-  const resData = req.body;
+  const data = req.body;
+
+  const connection = await pool.getConnection();
 
   try {
-    const tagsJson = JSON.stringify(resData.tags || []);
+    await connection.beginTransaction();
 
-    await pool.query(
+    const tagsJson = JSON.stringify(data.tags || []);
+
+    await connection.query(
       `UPDATE resources SET
         title = ?,
         image_url = ?,
         watermark_image_url = ?,
         download_url = ?,
-        category = ?,
         tags = ?,
         search_terms = ?,
         premium = ?,
@@ -101,30 +142,60 @@ router.put('/:id', checkDb, async (req, res) => {
         file_size = ?
        WHERE id = ?`,
       [
-        resData.title,
-        resData.imageUrl,
-        resData.watermarkImageUrl,
-        resData.downloadUrl,
-        resData.categories?.[0],
+        data.title,
+        data.imageUrl,
+        data.watermarkImageUrl,
+        data.downloadUrl,
         tagsJson,
-        resData.searchTerms,
-        resData.premium,
-        resData.format,
-        resData.orientation,
-        resData.canvaAvailable,
-        resData.canvaUrl,
-        resData.resolution,
-        resData.dimensions,
-        resData.fileSize,
+        data.searchTerms,
+        data.premium,
+        data.format,
+        data.orientation,
+        data.canvaAvailable,
+        data.canvaUrl,
+        data.resolution,
+        data.dimensions,
+        data.fileSize,
         id
       ]
     );
 
+    // remove categorias antigas
+    await connection.query(
+      'DELETE FROM resource_categories WHERE resource_id = ?',
+      [id]
+    );
+
+    // adiciona novas
+    if (Array.isArray(data.categories)) {
+      for (const categoryName of data.categories) {
+        const [[category]] = await connection.query(
+          'SELECT id FROM categories WHERE name = ?',
+          [categoryName]
+        );
+
+        if (category) {
+          await connection.query(
+            `INSERT INTO resource_categories (resource_id, category_id)
+             VALUES (?, ?)`,
+            [id, category.id]
+          );
+        }
+      }
+    }
+
+    await connection.commit();
     res.json({ message: 'Recurso atualizado' });
-  } catch {
-    res.status(500).json({ message: 'Erro ao atualizar' });
+
+  } catch (err) {
+    await connection.rollback();
+    console.error(err);
+    res.status(500).json({ message: 'Erro ao atualizar recurso' });
+  } finally {
+    connection.release();
   }
 });
+
 
 router.delete('/:id', checkDb, async (req, res) => {
   try {
