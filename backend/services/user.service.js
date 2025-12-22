@@ -1,4 +1,4 @@
-import pool from '../db/pool.js';
+import { pool } from '../database/pool.js';
 
 export async function checkQuotaReset(user) {
   if (!user) return user;

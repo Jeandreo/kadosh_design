@@ -2,7 +2,7 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
-import pool from '../db/pool.js';
+import { pool } from '../database/pool.js';
 import createCheckDb from '../middlewares/checkDb.js';
 import { checkQuotaReset } from '../services/user.service.js';
 

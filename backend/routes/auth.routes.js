@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
-import pool from '../db/pool.js';
+import { pool } from '../database/pool.js';
 import checkDbFactory from '../middlewares/checkDb.js';
 import {
   checkQuotaReset,

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import jwt from 'jsonwebtoken';
-import pool from '../db/pool.js';
+import { pool } from '../database/pool.js';
 import createCheckDb from '../middlewares/checkDb.js';
 
 const router = Router();
