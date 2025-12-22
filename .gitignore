@@ -15,7 +15,7 @@
 /node_modules
 /public/build
 /public/hot
-/backend/uploads
+/uploads
 /public/storage
 /storage/*.key
 /storage/pail
