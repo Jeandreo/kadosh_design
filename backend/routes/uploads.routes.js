@@ -9,7 +9,7 @@ router.post('/', upload.single('file'), (req, res) => {
     return res.status(400).json({ message: 'Nenhum arquivo enviado.' });
   }
 
-  const fileUrl = `/uploads/${path.basename(req.file.filename)}`;
+  const fileUrl = `../uploads/${path.basename(req.file.filename)}`;
 
   res.json({
     url: fileUrl,
