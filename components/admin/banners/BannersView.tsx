@@ -5,53 +5,17 @@ interface Props {
   banners: Banner[];
   categories: Category[];
   onSave: (banners: Banner[]) => void;
+  onUploadImage: (file: File) => Promise<string>;
 }
 
 export const BannersView = ({
   banners,
   categories,
   onSave,
+  onUploadImage,
 }: Props) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<Banner>>({});
-
-  const startCreate = () => {
-    setEditingId('new');
-    setForm({
-      title: '',
-      subtitle: '',
-      cta: 'Ver Mais',
-      category: categories[0]?.name || '',
-      image: '',
-    });
-  };
-
-  const startEdit = (banner: Banner) => {
-    setEditingId(banner.id);
-    setForm(banner);
-  };
-
-  const handleSave = () => {
-    if (!form.title || !form.image || !form.category) return;
-
-    let updated = [...banners];
-
-    if (editingId === 'new') {
-      updated.push({
-        ...(form as Banner),
-        id: Date.now().toString(),
-        order: banners.length + 1,
-      });
-    } else {
-      updated = updated.map(b =>
-        b.id === editingId ? { ...b, ...form } as Banner : b
-      );
-    }
-
-    onSave(updated);
-    setEditingId(null);
-    setForm({});
-  };
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto">
@@ -63,8 +27,17 @@ export const BannersView = ({
         </h1>
 
         <button
-          onClick={startCreate}
-          className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg flex items-center gap-2 text-sm"
+          onClick={() => {
+            setEditingId('new');
+            setForm({
+              title: '',
+              subtitle: '',
+              cta: '',
+              image: '',
+              category: categories[0]?.name,
+            });
+          }}
+          className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded-lg"
         >
           Novo Banner
         </button>
@@ -81,7 +54,6 @@ export const BannersView = ({
           {banners.map((b, index) => (
             <div
               key={b.id}
-              onClick={() => startEdit(b)}
               className={`
                 bg-[#1e1e1e] border rounded-xl overflow-hidden cursor-pointer
                 ${editingId === b.id ? 'border-blue-500' : 'border-white/5'}
@@ -159,13 +131,55 @@ export const BannersView = ({
                       )}
                       <label className="bg-white/5 hover:bg-white/10 text-white text-xs py-2 px-4 rounded cursor-pointer transition-colors border border-white/5">
                           Trocar Imagem
-                          <input type="file" className="hidden" accept="image/*" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+
+                              try {
+                                const url = await onUploadImage(file);
+                                setForm(prev => ({ ...prev, image: url }));
+                              } catch {
+                                alert('Erro ao enviar imagem');
+                              }
+                            }}
+                          />
                       </label>
                     </div>
                 </div>
                 <div className="flex gap-3 pt-4 border-t border-white/5">
                     <button className="flex-1 py-2 text-text-muted hover:text-white text-sm">Cancelar</button>
-                    <button className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-sm transition-colors">{editingId === 'new' ? 'Criar Banner' : 'Salvar Alterações'}</button>
+                    <button
+                      className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded text-sm"
+                      onClick={() => {
+                        let updated = [...banners];
+
+                        if (editingId === 'new') {
+                          updated.push({
+                            id: Date.now().toString(),
+                            title: form.title!,
+                            subtitle: form.subtitle || '',
+                            cta: form.cta || 'Ver Mais',
+                            image: form.image!,
+                            category: form.category!,
+                            order: banners.length + 1,
+                          });
+                        } else {
+                          updated = updated.map(b =>
+                            b.id === editingId ? { ...b, ...form } as Banner : b
+                          );
+                        }
+
+                        onSave(updated);
+                        setEditingId(null);
+                        setForm({});
+                      }}
+                    >
+                      {editingId === 'new' ? 'Criar Banner' : 'Salvar Alterações'}
+                    </button>
                 </div>
             </div>
           ) : (

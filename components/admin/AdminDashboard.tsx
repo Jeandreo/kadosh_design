@@ -15,6 +15,8 @@ import { addResource, getResources, updateResource, deleteResource } from '../..
 import { getUsers, updateUserPlan } from '../../services/userService';
 import { DesignResource, Category, Banner, User, UserPlan } from '../../types';
 import { Toast } from '../Toast';
+import { saveBanners } from '../../services/bannerService';
+
 
 
 export const AdminDashboard = () => {
@@ -474,70 +476,16 @@ export const AdminDashboard = () => {
       }
   };
 
-  // --- Category Management Logic ---
-  const handleAddCategory = async () => {
-    if (!newCatName.trim()) return;
-
+  const handleSaveBanner = async (updatedBanners: Banner[]) => {
     try {
-        const created = await createCategory(newCatName);
-        refreshCategories();
-        setNewCatName('');
-        showFeedback('Categoria criada com sucesso!');
-    } catch (e: any) {
-        showFeedback(e.message || 'Erro ao criar categoria', 'error');
+      await saveBanners(updatedBanners);
+      refreshBanners(updatedBanners);
+      showFeedback('Banners salvos com sucesso!');
+    } catch {
+      showFeedback('Erro ao salvar banners', 'error');
     }
   };
-
-  // --- Banner Management Logic ---
-  const handleEditBanner = (banner: Banner) => {
-      setEditingBannerId(banner.id);
-      setBannerForm(banner);
-  }
-
-  const handleCreateBanner = () => {
-      setEditingBannerId('new');
-      setBannerForm({
-          title: '',
-          subtitle: '',
-          cta: 'Ver Detalhes',
-          category: categories.length > 0 ? categories[0].name : '',
-          image: ''
-      });
-  }
-
-  const handleSaveBanner = () => {
-      if (!bannerForm.title || !bannerForm.image || !bannerForm.category) {
-          showFeedback("Preencha os campos obrigatórios", "error");
-          return;
-      }
-
-      let updatedBanners = [...banners];
-      
-      if (editingBannerId === 'new') {
-          // Creating new banner
-          const newBanner: Banner = {
-              id: Date.now().toString(),
-              title: bannerForm.title || 'Novo Banner',
-              subtitle: bannerForm.subtitle || '',
-              cta: bannerForm.cta || 'Ver Mais',
-              image: bannerForm.image || '',
-              category: bannerForm.category || 'Geral',
-              order: banners.length + 1
-          };
-          updatedBanners.push(newBanner);
-          showFeedback("Banner criado com sucesso!");
-      } else if (editingBannerId) {
-          // Updating existing
-          updatedBanners = updatedBanners.map(b => 
-            b.id === editingBannerId ? { ...b, ...bannerForm } as Banner : b
-          );
-          showFeedback("Banner atualizado!");
-      }
-      
-      refreshBanners(updatedBanners);
-      setEditingBannerId(null);
-      setBannerForm({ title: '', subtitle: '', cta: '', category: '', image: '' });
-  }
+  
 
   const handleBannerImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
       handleGenericImageUpload(e, (url) => setBannerForm(prev => ({ ...prev, image: url })));
@@ -619,16 +567,19 @@ export const AdminDashboard = () => {
 
   const handleCreateCategory = async (name: string) => {
     await createCategory(name);
+    showFeedback('Categoria criada com sucesso!');
     await refreshCategories();
   };
   
   const handleUpdateCategory = async (id: string, name: string) => {
     await updateCategory(id, name);
+    showFeedback('Categoria atualizada com sucesso!');
     await refreshCategories();
   };
   
   const handleDeleteCategory = async (id: string) => {
     await deleteCategory(id);
+    showFeedback('Categoria deletada com sucesso!');
     await refreshCategories();
   };
 
@@ -678,6 +629,10 @@ export const AdminDashboard = () => {
                 banners={banners}
                 categories={categories}
                 onSave={handleSaveBanner}
+                onUploadImage={async (file) => {
+                const result = await uploadFileToServer(file);
+                return result.url;
+                }}
             />
         )}
 
