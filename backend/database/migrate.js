@@ -114,6 +114,26 @@ export async function runMigrations() {
         )
     `);
 
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS plans (
+            id VARCHAR(50) PRIMARY KEY,
+            name VARCHAR(100) NOT NULL,
+            daily_quota INT NOT NULL,
+            price DECIMAL(10,2),
+            billing_period ENUM('monthly','annual','none') DEFAULT 'none',
+            auto_renew BOOLEAN DEFAULT TRUE,
+            active BOOLEAN DEFAULT TRUE
+        )
+    `);
+
+    await connection.query(`
+        INSERT IGNORE INTO plans (id, name, daily_quota, price, billing_period, auto_renew, active) VALUES
+        ('free', 'Free', 1, 0, 'none', FALSE, TRUE),
+        ('volunteer', 'Voluntário', 3, 29.90, 'monthly', TRUE, TRUE),
+        ('ministry', 'Ministério', 7, 49.90, 'monthly', TRUE, TRUE),
+        ('premium_annual', 'Premium Anual', 7, 299.99, 'annual', FALSE, TRUE);
+    `);
+
     // demais tabelas...
     console.log('Migrações executadas com sucesso');
   } finally {

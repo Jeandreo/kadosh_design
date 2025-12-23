@@ -3,14 +3,16 @@ import { useAuth } from '../contexts/AuthContext';
 import { Toast } from './Toast';
 import { CONFIG } from '../config';
 import { paymentService } from '../services/paymentService';
+import { Plan } from '../types';
 
 interface CheckoutModalProps {
   isOpen: boolean;
+  plan: Plan | null;
   onClose: () => void;
   onNavigate: (page: string) => void;
 }
 
-export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, onNavigate }) => {
+export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, plan, onClose, onNavigate }) => {
   const { user } = useAuth();
   const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card' | 'boleto'>('pix');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -28,32 +30,24 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
   if (!isOpen) return null;
 
   const handleMercadoPagoCheckout = async () => {
-      if (!user) return;
+    if (!user || !plan) return;
 
-      setIsProcessing(true);
-      setErrorMsg('');
+    setIsProcessing(true);
 
-      try {
-          // Dados do Plano (Poderiam vir de constantes/props)
-          const planId = 'ministry_monthly'; 
-          const title = 'Assinatura Plano Ministério - Mensal';
-          const price = 49.90;
+    try {
+      const preference = await paymentService.createPreference({
+        planId: plan.id,
+        title: plan.name,
+        price: plan.price,
+        userId: user.id,
+        billing: plan.billing
+      });
 
-          // Chama o backend para criar a preferência
-          const preference = await paymentService.createPreference(planId, title, price, user.id);
-
-          if (preference && preference.init_point) {
-              // Redireciona o usuário para o Checkout do Mercado Pago
-              window.location.href = preference.init_point;
-          } else {
-              throw new Error("Link de pagamento não gerado.");
-          }
-
-      } catch (err) {
-          console.error("Erro no checkout:", err);
-          setErrorMsg("Erro ao iniciar pagamento. Tente novamente.");
-          setIsProcessing(false);
-      }
+      window.location.href = preference.init_point;
+    } catch (err) {
+      setErrorMsg('Erro ao iniciar pagamento');
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -81,14 +75,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, o
         <div className="p-8 overflow-y-auto custom-scrollbar text-center">
             
             <div className="mb-8">
-                 <img 
+                 {/* <img 
                     src="https://http2.mlstatic.com/frontend-assets/mp-web-navigation/ui-navigation/5.21.22/mercadopago/logo__large.png" 
                     alt="Mercado Pago" 
                     className="h-8 mx-auto mb-4 opacity-90"
-                 />
-                 <h3 className="text-white font-bold text-lg mb-2">Plano Ministério</h3>
+                 /> */}
+                 <h3 className="text-white font-bold text-lg mb-2">{plan.name}</h3>
                  <p className="text-text-muted text-sm">Acesso total por 30 dias.</p>
-                 <div className="text-3xl font-extrabold text-white mt-4">R$ 49,90</div>
+                 <div className="text-3xl font-extrabold text-white mt-4">
+                 {new Intl.NumberFormat('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                  }).format(plan.price)}
+                 </div>
             </div>
 
             {errorMsg && (

@@ -9,7 +9,7 @@ import { Footer } from './components/Footer';
 import { ScrollToTop } from './components/ScrollToTop';
 import { Pagination } from './components/Pagination';
 import { FilterSidebar } from './components/FilterSidebar';
-import { ResourceType, DesignResource } from './types';
+import { ResourceType, DesignResource, Plan } from './types';
 import { useAuth } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { getResources } from './services/resourceService';
@@ -67,6 +67,8 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   
   const [gridPage, setGridPage] = useState(1);
+
+  const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
@@ -155,14 +157,16 @@ function App() {
     setSelectedResource(resource);
   };
 
-  const handleOpenCheckout = () => {
+  const handleOpenCheckout = (plan: Plan) => {
     if (!user) {
-        setAuthModalMode('signup');
-        setIsAuthModalOpen(true);
+      setAuthModalMode('signup');
+      setIsAuthModalOpen(true);
     } else {
-        setIsCheckoutModalOpen(true); 
+      setSelectedPlan(plan);
+      setIsCheckoutModalOpen(true);
     }
   };
+  
 
   const filteredResources = useMemo(() => {
     let result = allResources.filter(resource => {
@@ -468,8 +472,9 @@ function App() {
         </Suspense>
 
         <Suspense fallback={null}>
-          <CheckoutModal 
+          <CheckoutModal
             isOpen={isCheckoutModalOpen}
+            plan={selectedPlan}
             onClose={() => setIsCheckoutModalOpen(false)}
             onNavigate={handleNavigate}
           />

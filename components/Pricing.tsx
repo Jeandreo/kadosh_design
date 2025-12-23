@@ -1,8 +1,9 @@
 
+import { Plan } from '../types';
 import React from 'react';
 
 interface PricingProps {
-  onCheckout: () => void;
+  onCheckout: (plan: Plan) => void;
 }
 
 export const Pricing: React.FC<PricingProps> = ({ onCheckout }) => {
@@ -60,7 +61,14 @@ export const Pricing: React.FC<PricingProps> = ({ onCheckout }) => {
             </ul>
 
             <button 
-                onClick={onCheckout}
+                onClick={() =>
+                  onCheckout({
+                    id: 'ministry',
+                    name: 'Plano Voluntário',
+                    price: 29.90,
+                    billing: 'monthly'
+                  })
+                }
                 className="w-full bg-transparent border border-white/20 text-white font-semibold py-3.5 rounded-lg hover:border-white hover:bg-white/5 transition-all"
             >
               Começar Agora
@@ -108,7 +116,14 @@ export const Pricing: React.FC<PricingProps> = ({ onCheckout }) => {
             </ul>
 
             <button 
-                onClick={onCheckout}
+                onClick={() =>
+                  onCheckout({
+                    id: 'ministry',
+                    name: 'Plano Ministério',
+                    price: 49.90,
+                    billing: 'monthly'
+                  })
+                }
                 className="w-full bg-primary text-white font-bold py-4 rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all transform active:scale-[0.98]"
             >
               Assinar Mensal
@@ -162,7 +177,14 @@ export const Pricing: React.FC<PricingProps> = ({ onCheckout }) => {
             </ul>
 
             <button 
-                onClick={onCheckout}
+                onClick={() =>
+                  onCheckout({
+                    id: 'ministry',
+                    name: 'Plano Kadosh Design Premium',
+                    price: 299.90,
+                    billing: 'annual'
+                  })
+                }
                 className="w-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-black font-extrabold py-3.5 rounded-lg shadow-[0_4px_15px_rgba(245,158,11,0.2)] transition-all transform active:scale-[0.98]"
             >
               Garantir Oferta Anual

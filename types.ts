@@ -1,4 +1,3 @@
-
 export enum ResourceType {
   DESTAQUES = 'Destaques',
   FLYERS = 'Flyers',
@@ -94,4 +93,20 @@ export interface User {
   favorites: string[];
   downloadsHistory: DownloadHistoryItem[]; // Detailed history
   autoRenew?: boolean;
+}
+
+
+export interface Plan {
+  id: 'volunteer' | 'ministry' | 'premium_annual';
+  name: string;
+  price: number;
+  billing: 'monthly' | 'annual';
+}
+
+export interface CreatePreferencePayload {
+  planId: string;
+  title: string;
+  price: number;
+  userId: string;
+  billing: 'monthly' | 'annual';
 }

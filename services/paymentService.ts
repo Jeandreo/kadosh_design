@@ -12,30 +12,33 @@ export interface PaymentPreference {
     init_point: string; // URL de checkout
 }
 
-export const paymentService = {
-    /**
-     * Cria uma preferência de pagamento.
-     * Envia o userId para que o webhook possa identificar quem pagou.
-     */
-    createPreference: async (planId: string, title: string, price: number, userId: string): Promise<PaymentPreference> => {
-        try {
-            const response = await api.post<PaymentPreference>('/payments/create-preference', {
-                planId,
-                title,
-                price,
-                userId
-            });
-            return response;
-        } catch (error) {
-            console.error("Erro ao criar preferência de pagamento:", error);
-            throw error;
-        }
-    },
+export interface CreatePreferencePayload {
+    planId: string;
+    title: string;
+    price: number;
+    userId: string;
+    billing: 'monthly' | 'annual';
+  }
 
-    /**
-     * Verifica o status de um pagamento (se necessário polling)
-     */
+export const paymentService = {
+    createPreference: async (
+      payload: CreatePreferencePayload
+    ): Promise<PaymentPreference> => {
+      try {
+        const response = await api.post<PaymentPreference>(
+          '/payments/create-preference',
+          payload
+        );
+        return response;
+      } catch (error) {
+        console.error('Erro ao criar preferência de pagamento:', error);
+        throw error;
+      }
+    },
+  
     checkStatus: async (paymentId: string) => {
-        return api.get(`/payments/status/${paymentId}`);
+      return api.get(`/payments/status/${paymentId}`);
     }
-};
+  };
+
+  
