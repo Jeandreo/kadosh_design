@@ -58,7 +58,7 @@ export const CONFIG = {
   MP_PUBLIC_KEY: 'APP_USR-9ab1dbd5-66d7-4582-aceb-23b285303885', 
   PIX_KEY_DISPLAY: '53.283.247/0001-29',
 
-  URL_BACKEND: 'http://localhost:3001/api',
+  URL_BACKEND: `${import.meta.env.VITE_API_URL}/api`,
 
   // 🔥 FIREBASE (Opcional - Apenas Storage se necessário)
   FIREBASE: {

@@ -4,6 +4,7 @@ import { Toast } from './Toast';
 import { useAuth } from '../contexts/AuthContext';
 import { getResources } from '../services/resourceService';
 import { DesignResource } from '../types';
+import { getMyDownloadsRequest } from '../services/downloadService';
 import { CONFIG } from '../config';
 
 interface UserDashboardProps {
@@ -20,14 +21,27 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error' | 'info'>('success');
-  
+  const [downloadsHistory, setDownloadsHistory] = useState<{ resourceId: string; downloadedAt: string }[]>([]);
   const [favoritesList, setFavoritesList] = useState<DesignResource[]>([]);
   const [allResources, setAllResources] = useState<DesignResource[]>([]);
-  
-  // Settings Form State
   const [editName, setEditName] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+  
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+  
+    getMyDownloadsRequest(token)
+      .then(setDownloadsHistory)
+      .catch(err => {
+        console.error(err);
+      });
+  }, [user]);
+  
+  
 
   useEffect(() => {
       const loadRes = async () => {
@@ -156,17 +170,18 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
       document.body.removeChild(link);
   };
 
-  // Process History: Link IDs to Resource Data
-  const historyItems = (user.downloadsHistory || []).map(item => {
-      const res = allResources.find(r => r.id === item.resourceId);
-      return {
-          ...item,
-          title: res ? res.title : 'Recurso Removido',
-          thumb: res ? res.imageUrl : 'https://via.placeholder.com/50',
-          format: res ? res.format : 'UNK',
-          formattedDate: new Date(item.timestamp).toLocaleString('pt-BR')
-      };
-  });
+    // Process History: Link IDs to Resource Data
+    const historyItems = downloadsHistory.map(item => {
+        const res = allResources.find(r => r.id === item.resourceId);
+        return {
+        resourceId: item.resourceId,
+        title: res ? res.title : 'Recurso Removido',
+        thumb: res ? res.imageUrl : 'https://via.placeholder.com/50',
+        format: res ? res.format : 'UNK',
+        formattedDate: new Date(item.downloadedAt).toLocaleString('pt-BR'),
+        };
+    });
+  
 
   const renderContent = () => {
     switch (activeTab) {

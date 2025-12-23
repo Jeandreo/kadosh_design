@@ -74,4 +74,39 @@ router.post('/', checkDb, async (req, res) => {
   }
 });
 
+router.get('/me', checkDb, async (req, res) => {
+  const auth = req.headers.authorization;
+  if (!auth) {
+    return res.status(401).json({ message: 'Não autorizado' });
+  }
+
+  const token = auth.split(' ')[1];
+
+  try {
+    const { id: userId } = jwt.verify(token, JWT_SECRET);
+
+    const [rows] = await pool.query(
+      `
+      SELECT
+        ud.resource_id,
+        ud.downloaded_at
+      FROM user_downloads ud
+      WHERE ud.user_id = ?
+      ORDER BY ud.downloaded_at DESC
+      `,
+      [userId]
+    );
+
+    res.json(
+      rows.map(r => ({
+        resourceId: r.resource_id,
+        downloadedAt: r.downloaded_at
+      }))
+    );
+  } catch (err) {
+    res.status(401).json({ message: 'Token inválido ou expirado' });
+  }
+});
+
+
 export default router;

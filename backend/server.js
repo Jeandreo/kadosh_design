@@ -4,7 +4,7 @@ import { initDatabase } from './database/index.js';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 
 async function bootstrap() {
   await initDatabase();

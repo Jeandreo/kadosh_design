@@ -45,7 +45,8 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ resource, onBack
     }
   };
 
-  const handleAction = (type: 'download' | 'canva') => {
+  const handleAction = async (type: 'download' | 'canva') => {
+    
     // 1. Auth Check
     if (!user) {
         onCheckout();
@@ -62,7 +63,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({ resource, onBack
     }
 
     // 3. Centralized Quota & History Logic
-    const result = registerDownload(resource.id);
+    const result = await registerDownload(resource.id);
 
     if (!result.success) {
         setToastMessage(result.message);

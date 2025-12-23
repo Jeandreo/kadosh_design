@@ -4,6 +4,7 @@ import { User, UserPlan, Notification, Category, Banner } from '../types';
 import { signupRequest, updateProfileRequest } from '../services/authService';
 import { getBanners } from '../services/bannerService';
 import { getCategories } from '../services/categoriesService';
+import { registerDownloadRequest } from '../services/downloadService';
 
 interface AuthContextType {
   user: User | null;
@@ -81,7 +82,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       loadStaticData();
   }, []);
 
-  const API_URL = 'http://localhost:3001';
+  const API_URL = import.meta.env.VITE_API_URL;
   const login = async (email: string, password: string) => {
     const res = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
@@ -139,28 +140,41 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('kadosh_mock_user', JSON.stringify(updatedUser));
   };
 
-  const registerDownload = async (resourceId: string): Promise<{ success: boolean; message: string }> => {
-      if (!user) return { success: false, message: "Faça login." };
-      
-      // Mock Quota Logic
-      if (user.quotaUsed >= user.quotaTotal) {
-           return { success: false, message: "Limite diário de downloads atingido!" };
-      }
-      
-      const updatedUser = { 
-          ...user, 
-          quotaUsed: user.quotaUsed + 1,
-          downloadsHistory: [{
-              resourceId,
-              timestamp: Date.now(),
-              dateString: new Date().toLocaleDateString()
-          }, ...(user.downloadsHistory || [])]
+  const registerDownload = async (
+    resourceId: string
+  ): Promise<{ success: boolean; message: string }> => {
+    if (!user) {
+      return { success: false, message: 'Faça login.' };
+    }
+  
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      return { success: false, message: 'Sessão expirada.' };
+    }
+  
+    try {
+      const result = await registerDownloadRequest(resourceId, token);
+  
+      // Atualiza SOMENTE o que faz sentido no frontend
+      setUser(prev =>
+        prev
+          ? {
+              ...prev,
+              quotaUsed: result.quotaUsed
+            }
+          : prev
+      );
+  
+      return {
+        success: true,
+        message: 'Download autorizado.'
       };
-      
-      setUser(updatedUser);
-      localStorage.setItem('kadosh_mock_user', JSON.stringify(updatedUser));
-      
-      return { success: true, message: "Download autorizado (Simulação)." };
+    } catch (err: any) {
+      return {
+        success: false,
+        message: err.message || 'Erro ao registrar download'
+      };
+    }
   };
 
   const toggleFavorite = async (resourceId: string) => {

@@ -12,7 +12,7 @@ import {
 
 const router = Router();
 const checkDb = checkDbFactory(pool);
-const JWT_SECRET = process.env.JWT_SECRET || 'kadosh_secret_key_change_this';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post('/signup', checkDb, async (req, res) => {
   const { name, email, password } = req.body;
