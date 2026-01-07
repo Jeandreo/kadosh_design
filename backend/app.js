@@ -3,7 +3,6 @@ import cors from 'cors';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import multer from 'multer';
 
 import apiRoutes from './routes/index.js';
 

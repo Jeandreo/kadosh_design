@@ -466,15 +466,21 @@ export const AdminDashboard = () => {
     setIsUploadModalOpen(false);
   };
 
-  const confirmDelete = () => {
-      if (resourceToDelete) {
-          deleteResource(resourceToDelete);
-          loadData();
-          setIsDeleteModalOpen(false);
-          setResourceToDelete(null);
-          showFeedback("Arte excluída com sucesso!", 'info');
-      }
-  };
+  const confirmDelete = async () => {
+    if (!resourceToDelete) return;
+
+    try {
+        await deleteResource(resourceToDelete);
+        await loadData(); // 🔑 agora recarrega DEPOIS do delete
+        showFeedback("Arte excluída com sucesso!", 'info');
+    } catch (err) {
+        showFeedback("Erro ao excluir arte", 'error');
+    } finally {
+        setIsDeleteModalOpen(false);
+        setResourceToDelete(null);
+    }
+};
+
 
   const handleSaveBanner = async (updatedBanners: Banner[]) => {
     try {

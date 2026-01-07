@@ -3,6 +3,8 @@ import crypto from 'crypto';
 
 import { pool } from '../database/pool.js';
 import createCheckDb from '../middlewares/checkDb.js';
+import { extractS3Key } from '../utils/s3Key.js';
+import { deleteFromS3 } from '../services/s3Delete.js';
 
 const router = Router();
 const checkDb = createCheckDb(pool);
@@ -198,14 +200,48 @@ router.put('/:id', checkDb, async (req, res) => {
 
 
 router.delete('/:id', checkDb, async (req, res) => {
+  const conn = pool;
+
   try {
-    await pool.query('DELETE FROM resources WHERE id = ?', [
-      req.params.id
-    ]);
-    res.json({ message: 'Deletado' });
-  } catch {
-    res.status(500).send();
+    // 1️⃣ Buscar resource
+    const [rows] = await conn.query(
+      'SELECT image_url, watermark_image_url, download_url FROM resources WHERE id = ?',
+      [req.params.id]
+    );
+
+    if (!rows.length) {
+      return res.status(404).json({ message: 'Recurso não encontrado' });
+    }
+
+    const resource = rows[0];
+
+    // 2️⃣ Deletar arquivos no S3
+    const urls = [
+      resource.image_url,
+      resource.watermark_image_url,
+      resource.download_url,
+    ].filter(Boolean);
+
+    for (const url of urls) {
+      const key = extractS3Key(url);
+      if (key) {
+        await deleteFromS3(key);
+      }
+    }
+
+    // 3️⃣ Deletar do banco
+    await conn.query(
+      'DELETE FROM resources WHERE id = ?',
+      [req.params.id]
+    );
+
+    return res.json({ message: 'Deletado com sucesso' });
+
+  } catch (err) {
+    console.error('DELETE RESOURCE ERROR:', err);
+    return res.status(500).json({ error: 'Erro ao deletar recurso' });
   }
 });
+
 
 export default router;

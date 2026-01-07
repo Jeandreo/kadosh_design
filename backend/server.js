@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
+import './env.js';
 import { createApp } from './app.js';
 import { initDatabase } from './database/index.js';
-
-dotenv.config();
 
 const PORT = process.env.PORT;
 
