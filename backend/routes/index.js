@@ -11,7 +11,7 @@ import banners      from './banners.routes.js';
 import payments     from './payments.routes.js';
 import health       from './health.routes.js';
 import subscriptions from './subscriptions.routes.js';
-
+import webhooks     from './webhooks.routes.js';
 
 const router = Router();
 
@@ -26,5 +26,6 @@ router.use('/categories', categories);
 router.use('/banners', banners);
 router.use('/payments', payments);
 router.use('/subscriptions', subscriptions);
+router.use('/webhooks', webhooks);
 
 export default router;
