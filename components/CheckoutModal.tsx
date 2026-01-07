@@ -29,26 +29,34 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, plan, onCl
 
   if (!isOpen) return null;
 
-  const handleMercadoPagoCheckout = async () => {
+    const handleMercadoPagoCheckout = async () => {
     if (!user || !plan) return;
 
     setIsProcessing(true);
 
     try {
-      const preference = await paymentService.createPreference({
-        planId: plan.id,
-        title: plan.name,
-        price: plan.price,
-        userId: user.id,
-        billing: plan.billing
+      const subscription = await paymentService.createSubscription({
+        plan: {
+          id: plan.id,
+          name: plan.name,
+          price: plan.price,
+          billing: plan.billing, // monthly | yearly
+        },
+        user: {
+          id: user.id,
+          email: user.email,
+        }
       });
 
-      window.location.href = preference.init_point;
+      // Redireciona para o Mercado Pago
+      window.location.href = subscription.init_point;
+
     } catch (err) {
-      setErrorMsg('Erro ao iniciar pagamento');
+      setErrorMsg('Erro ao iniciar assinatura');
       setIsProcessing(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">

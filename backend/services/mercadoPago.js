@@ -1,5 +1,11 @@
-import { MercadoPagoConfig } from 'mercadopago';
+import axios from 'axios';
 
-export const mpClient = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN
+const mp = axios.create({
+  baseURL: 'https://api.mercadopago.com',
+  headers: {
+    Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`,
+    'Content-Type': 'application/json',
+  },
 });
+
+export default mp;

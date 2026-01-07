@@ -110,3 +110,8 @@ export interface CreatePreferencePayload {
   userId: string;
   billing: 'monthly' | 'annual';
 }
+
+export interface SubscriptionCheckout {
+  id: string;
+  init_point: string;
+}

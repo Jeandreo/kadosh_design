@@ -10,9 +10,12 @@ import categories   from './categories.routes.js';
 import banners      from './banners.routes.js';
 import payments     from './payments.routes.js';
 import health       from './health.routes.js';
+import subscriptions from './subscriptions.routes.js';
+
 
 const router = Router();
 
+router.use('/', health);
 router.use('/upload', uploads);
 router.use('/auth', auth);
 router.use('/favorites', favorites);
@@ -22,6 +25,6 @@ router.use('/resources', resources);
 router.use('/categories', categories);
 router.use('/banners', banners);
 router.use('/payments', payments);
-router.use('/', health);
+router.use('/subscriptions', subscriptions);
 
 export default router;

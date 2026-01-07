@@ -134,6 +134,35 @@ export async function runMigrations() {
         ('premium_annual', 'Premium Anual', 7, 299.99, 'annual', FALSE, TRUE);
     `);
 
+    await connection.query(`
+        CREATE TABLE IF NOT EXISTS subscriptions (
+            id BIGINT AUTO_INCREMENT PRIMARY KEY,
+            user_id VARCHAR(36) NOT NULL,
+            plan_id VARCHAR(32) NOT NULL,
+
+            mp_preapproval_id VARCHAR(64) NOT NULL,
+            mp_status VARCHAR(32) NOT NULL,
+
+            billing VARCHAR(16) NOT NULL,
+            amount DECIMAL(10,2) NOT NULL,
+
+            started_at DATETIME NULL,
+            cancelled_at DATETIME NULL,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+            UNIQUE KEY uniq_user_subscription (user_id),
+            UNIQUE KEY uniq_mp_preapproval (mp_preapproval_id),
+
+            CONSTRAINT fk_subscriptions_plan
+                FOREIGN KEY (plan_id)
+                REFERENCES plans(id)
+                ON UPDATE CASCADE
+                ON DELETE RESTRICT
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    `);
+
     // demais tabelas...
     console.log('Migrações executadas com sucesso');
   } finally {
