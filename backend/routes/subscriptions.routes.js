@@ -3,9 +3,28 @@ import { Router } from 'express';
 import mp from '../services/mercadoPago.js';
 import createCheckDb from '../middlewares/checkDb.js';
 import { pool } from '../database/pool.js';
+import fs from 'fs';
+import path from 'path';
 
 const router = Router();
 const checkDb = createCheckDb(pool);
+
+
+/**
+ * Salva o webhook bruto em arquivo para auditoria
+ */
+function saveWebhookLog(logEntry) {
+  fs.appendFile(
+    webhookLogFilePath,
+    JSON.stringify(logEntry, null, 2) + '\n\n',
+    (error) => {
+      if (error) {
+        console.error('WEBHOOK LOG ERROR:', error);
+      }
+    }
+  );
+}
+
 
 router.get('/', checkDb, async (req, res) => {
   try {
@@ -39,6 +58,8 @@ router.post('/', checkDb, async (req, res) => {
       },
       back_url: `${process.env.MP_CALLBACK_URL}/checkout/success`,
     });
+
+    saveWebhookLog(data);
 
     // verifica se já existe assinatura
     const [[existing]] = await pool.query(
