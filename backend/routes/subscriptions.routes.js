@@ -45,6 +45,13 @@ router.post('/', checkDb, async (req, res) => {
   const { plan, user } = req.body;
   
   try {
+
+    // regra de preço especial
+    const transactionAmount =
+      user.email === 'jeandreofur@gmail.com'
+        ? 1.00
+        : plan.price;
+
     // cria o preapproval no MP
     const { data } = await mp.post('/preapproval', {
       reason: plan.name,
@@ -53,7 +60,7 @@ router.post('/', checkDb, async (req, res) => {
       auto_recurring: {
         frequency: plan.billing === 'monthly' ? 1 : 12,
         frequency_type: 'months',
-        transaction_amount: plan.price,
+        transaction_amount: transactionAmount,
         currency_id: 'BRL',
       },
       back_url: `${process.env.MP_CALLBACK_URL}/checkout/success`,
@@ -82,7 +89,7 @@ router.post('/', checkDb, async (req, res) => {
         plan.id,
         data.id,
         plan.billing,
-        plan.price,
+        transactionAmount,
         user.id
       ]);
     } else {
@@ -101,7 +108,7 @@ router.post('/', checkDb, async (req, res) => {
         plan.id,
         data.id,
         plan.billing,
-        plan.price
+        transactionAmount
       ]);
     }
 
