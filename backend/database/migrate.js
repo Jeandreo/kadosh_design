@@ -138,7 +138,7 @@ export async function runMigrations() {
         CREATE TABLE IF NOT EXISTS subscriptions (
             id BIGINT AUTO_INCREMENT PRIMARY KEY,
             user_id VARCHAR(36) NOT NULL,
-            plan_id VARCHAR(32) NOT NULL,
+            plan_id VARCHAR(50) NOT NULL,
 
             mp_preapproval_id VARCHAR(64) NOT NULL,
             mp_status VARCHAR(32) NOT NULL,
