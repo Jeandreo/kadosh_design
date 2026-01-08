@@ -24,8 +24,6 @@ router.get('/', checkDb, async (req, res) => {
 
 router.post('/', checkDb, async (req, res) => {
   const { plan, user } = req.body;
-  console.log(process.env.MP_CALLBACK_URL);
-  console.log(plan, user);
   
   try {
     // cria o preapproval no MP
