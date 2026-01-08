@@ -153,7 +153,7 @@ export async function runMigrations() {
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
             UNIQUE KEY uniq_user_subscription (user_id),
-            UNIQUE KEY uniq_mp_preapproval (mp_preapproval_id),
+            UNIQUE KEY uniq_mp_preapproval (mp_preapproval_id)
 
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
