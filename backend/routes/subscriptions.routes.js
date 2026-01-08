@@ -26,74 +26,75 @@ router.post('/', checkDb, async (req, res) => {
   const { plan, user } = req.body;
   console.log(process.env.MP_CALLBACK_URL);
   console.log(plan, user);
-  try {
-    // cria o preapproval no MP
-    const { data } = await mp.post('/preapproval', {
-      reason: plan.name,
-      external_reference: `user_${user.id}`,
-      payer_email: user.email,
-      auto_recurring: {
-        frequency: plan.billing === 'monthly' ? 1 : 12,
-        frequency_type: 'months',
-        transaction_amount: plan.price,
-        currency_id: 'BRL',
-      },
-      back_url: `${process.env.MP_CALLBACK_URL}/checkout/success`,
-    });
+  
+  // // try {
+  // //   // cria o preapproval no MP
+  // //   const { data } = await mp.post('/preapproval', {
+  // //     reason: plan.name,
+  // //     external_reference: `user_${user.id}`,
+  // //     payer_email: user.email,
+  // //     auto_recurring: {
+  // //       frequency: plan.billing === 'monthly' ? 1 : 12,
+  // //       frequency_type: 'months',
+  // //       transaction_amount: plan.price,
+  // //       currency_id: 'BRL',
+  // //     },
+  // //     back_url: `${process.env.MP_CALLBACK_URL}/checkout/success`,
+  // //   });
 
-    // verifica se já existe assinatura
-    const [[existing]] = await pool.query(
-      'SELECT id FROM subscriptions WHERE user_id = ?',
-      [user.id]
-    );
+  // //   // verifica se já existe assinatura
+  // //   const [[existing]] = await pool.query(
+  // //     'SELECT id FROM subscriptions WHERE user_id = ?',
+  // //     [user.id]
+  // //   );
 
-    if (existing) {
-      // UPDATE
-      await pool.query(`
-        UPDATE subscriptions SET
-          plan_id = ?,
-          mp_preapproval_id = ?,
-          mp_status = 'pending',
-          billing = ?,
-          amount = ?,
-          cancelled_at = NULL
-        WHERE user_id = ?
-      `, [
-        plan.id,
-        data.id,
-        plan.billing,
-        plan.price,
-        user.id
-      ]);
-    } else {
-      // INSERT
-      await pool.query(`
-        INSERT INTO subscriptions (
-          user_id,
-          plan_id,
-          mp_preapproval_id,
-          mp_status,
-          billing,
-          amount
-        ) VALUES (?, ?, ?, 'pending', ?, ?)
-      `, [
-        user.id,
-        plan.id,
-        data.id,
-        plan.billing,
-        plan.price
-      ]);
-    }
+  // //   if (existing) {
+  // //     // UPDATE
+  // //     await pool.query(`
+  // //       UPDATE subscriptions SET
+  // //         plan_id = ?,
+  // //         mp_preapproval_id = ?,
+  // //         mp_status = 'pending',
+  // //         billing = ?,
+  // //         amount = ?,
+  // //         cancelled_at = NULL
+  // //       WHERE user_id = ?
+  // //     `, [
+  // //       plan.id,
+  // //       data.id,
+  // //       plan.billing,
+  // //       plan.price,
+  // //       user.id
+  // //     ]);
+  // //   } else {
+  // //     // INSERT
+  // //     await pool.query(`
+  // //       INSERT INTO subscriptions (
+  // //         user_id,
+  // //         plan_id,
+  // //         mp_preapproval_id,
+  // //         mp_status,
+  // //         billing,
+  // //         amount
+  // //       ) VALUES (?, ?, ?, 'pending', ?, ?)
+  // //     `, [
+  // //       user.id,
+  // //       plan.id,
+  // //       data.id,
+  // //       plan.billing,
+  // //       plan.price
+  // //     ]);
+  // //   }
 
-    res.json({
-      id: data.id,
-      init_point: data.init_point,
-    });
+  // //   res.json({
+  // //     id: data.id,
+  // //     init_point: data.init_point,
+  // //   });
 
-  } catch (err) {
-    console.error('MP CREATE ERROR:', err);
-    res.status(500).json({ message: 'Erro ao criar assinatura' });
-  }
+  // // } catch (err) {
+  // //   console.error('MP CREATE ERROR:', err);
+  // //   res.status(500).json({ message: 'Erro ao criar assinatura' });
+  // // }
 });
 
 
