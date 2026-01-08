@@ -30,7 +30,7 @@ router.post('/', checkDb, async (req, res) => {
     const { data } = await mp.post('/preapproval', {
       reason: plan.name,
       external_reference: `user_${user.id}`,
-      payer_email: user.email,
+      payer_email: 'teste@kadoshdesign.com.br',
       auto_recurring: {
         frequency: plan.billing === 'monthly' ? 1 : 12,
         frequency_type: 'months',

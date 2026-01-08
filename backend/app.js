@@ -24,7 +24,8 @@ export function createApp() {
         'http://localhost:5173',
         'https://www.kadoshdesign.com.br',
         'https://kadoshdesign.com.br',
-        'https://api.kadoshdesign.com.br'
+        'https://api.kadoshdesign.com.br',
+        'https://42e0715e5a73.ngrok-free.app'
       ];
 
       if (!origin || allowedOrigins.includes(origin) || origin.includes('localhost')) {
