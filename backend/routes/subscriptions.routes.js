@@ -48,7 +48,7 @@ router.post('/', checkDb, async (req, res) => {
         transaction_amount: transactionAmount,
         currency_id: 'BRL',
       },
-      back_url: `${process.env.MP_CALLBACK_URL}/checkout/success`,
+      back_url: `${process.env.MP_CALLBACK_URL}/api/checkout/success`,
     });
 
     // verifica se já existe assinatura
