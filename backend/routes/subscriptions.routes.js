@@ -3,8 +3,6 @@ import { Router } from 'express';
 import mp from '../services/mercadoPago.js';
 import createCheckDb from '../middlewares/checkDb.js';
 import { pool } from '../database/pool.js';
-import fs from 'fs';
-import path from 'path';
 
 const router = Router();
 const checkDb = createCheckDb(pool);
@@ -30,10 +28,14 @@ router.post('/', checkDb, async (req, res) => {
   try {
 
     // regra de preço especial
-    const transactionAmount =
-      user.email === 'jeandreofur@gmail.com'
-        ? 1.00
-        : plan.price;
+    const DISCOUNT_EMAILS = [
+      'jeandreofur@gmail.com',
+      'pr.hudsonsoarez@gmail.com',
+    ];
+
+    const transactionAmount = DISCOUNT_EMAILS.includes(user.email)
+      ? 1.00
+      : plan.price;
 
     // cria o preapproval no MP
     const { data } = await mp.post('/preapproval', {
