@@ -14,14 +14,5 @@ async function bootstrap() {
   });
 }
 console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
-console.log('MP_ACCESS_TOKEN ATUAL:', process.env.MP_ACCESS_TOKEN);
 
 bootstrap();
