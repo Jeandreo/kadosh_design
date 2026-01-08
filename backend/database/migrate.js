@@ -155,11 +155,6 @@ export async function runMigrations() {
             UNIQUE KEY uniq_user_subscription (user_id),
             UNIQUE KEY uniq_mp_preapproval (mp_preapproval_id),
 
-            CONSTRAINT fk_subscriptions_plan
-                FOREIGN KEY (plan_id)
-                REFERENCES plans(id)
-                ON UPDATE CASCADE
-                ON DELETE RESTRICT
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     `);
 
