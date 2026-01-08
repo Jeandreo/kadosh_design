@@ -24,13 +24,14 @@ router.get('/', checkDb, async (req, res) => {
 
 router.post('/', checkDb, async (req, res) => {
   const { plan, user } = req.body;
-
+  console.log(process.env.MP_CALLBACK_URL);
+  console.log(plan, user);
   try {
     // cria o preapproval no MP
     const { data } = await mp.post('/preapproval', {
       reason: plan.name,
       external_reference: `user_${user.id}`,
-      payer_email: 'test_user_1495078743@testuser.com',
+      payer_email: user.email,
       auto_recurring: {
         frequency: plan.billing === 'monthly' ? 1 : 12,
         frequency_type: 'months',
