@@ -7,8 +7,6 @@ import { pool } from '../database/pool.js';
 const router = Router();
 const checkDb = createCheckDb(pool);
 
-console.log(process.env.MP_ACCESS_TOKEN);
-
 router.get('/', checkDb, async (req, res) => {
   try {
     const { data } = await mp.get('/preapproval/search', {
