@@ -119,7 +119,7 @@ router.post('/', checkDb, async (req, res) => {
 
   } catch (err) {
     console.error('MP CREATE ERROR:', err);
-    res.status(500).json({ message: 'Erro ao criar assinatura', error: err.response?.data || err });
+    res.status(500).json({ message: 'Erro ao criar assinatura', error: err });
   }
 });
 
