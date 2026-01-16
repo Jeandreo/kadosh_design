@@ -70,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
     onNavigate,
     onSelectCategory
 }) => {
-  const { user, logout, unreadCount, categories, loginAsMock } = useAuth();
+  const { user, logout, unreadCount, categories } = useAuth();
   const [searchInput, setSearchInput] = useState('');
   const [searchFilter, setSearchFilter] = useState<string>('Destaques');
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
@@ -107,17 +107,17 @@ export const Header: React.FC<HeaderProps> = ({
     }
   }, [isDrawerOpen]);
 
+  // Header.tsx - Corrija a função handleSearch
   const handleSearch = async () => {
     onSearch(searchInput, searchFilter);
-    onNavigate('home');
   };
 
   const handleLogoClick = () => {
-    onNavigate('home');
-    onSearch('', 'Destaques');
+    onNavigate('/');
     setSearchInput('');
-    setSearchFilter('Destaques');
     setIsDrawerOpen(false);
+    // onSearch('', 'Destaques');
+    // setSearchFilter('Destaques');
   };
 
   const handleCategoryClick = (category: string) => {
@@ -128,21 +128,11 @@ export const Header: React.FC<HeaderProps> = ({
   const handleLogout = () => {
     logout();
     setIsProfileMenuOpen(false);
-    onNavigate('home');
+    onNavigate('/');
   }
 
   return (
     <>
-        {/* DEBUG BAR */}
-        {!user && (
-            <div className="bg-yellow-600/20 text-yellow-500 text-[10px] font-bold py-1 px-4 text-center border-b border-yellow-500/10 flex justify-center gap-4">
-                <span>MODO SIMULAÇÃO</span>
-                <button onClick={() => { loginAsMock('admin'); onNavigate('admin'); }} className="hover:text-white underline">Entrar como Admin</button>
-                <button onClick={() => loginAsMock('vip')} className="hover:text-white underline">Entrar como VIP</button>
-                 <button onClick={() => loginAsMock('member')} className="hover:text-white underline">Entrar como Grátis</button>
-            </div>
-        )}
-
       <header className="sticky top-0 z-50 backdrop-blur-[12px] bg-[rgba(24,26,27,0.85)] shadow-[0_4px_30px_rgba(0,0,0,0.1)] border-b border-white/5 h-auto md:h-24 transition-all">
         <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-full flex flex-col md:justify-center">
           
@@ -241,7 +231,7 @@ export const Header: React.FC<HeaderProps> = ({
                                   <button onClick={() => { onNavigate('user-dashboard'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-white/5 hover:text-white transition-colors">
                                       <i className="far fa-user-circle w-5 text-center mr-2"></i> Perfil / Dashboard
                                   </button>
-                                  <button onClick={() => { onNavigate('pricing'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-white/5 hover:text-white transition-colors">
+                                  <button onClick={() => { onNavigate('planos'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-white/5 hover:text-white transition-colors">
                                       <i className="fas fa-crown w-5 text-center mr-2 text-yellow-500/80"></i> Assinaturas
                                   </button>
                                   <div className="h-px bg-white/5 my-2"></div>
@@ -258,7 +248,7 @@ export const Header: React.FC<HeaderProps> = ({
               ) : (
                   <>
                       <button 
-                        onClick={() => onNavigate('pricing')}
+                        onClick={() => onNavigate('planos')}
                         className="hidden lg:block text-text-muted hover:text-white font-normal text-[13px] transition-colors"
                       >
                         Planos
@@ -346,9 +336,9 @@ export const Header: React.FC<HeaderProps> = ({
                  <div className="my-8 border-t border-white/5"></div>
                  
                  <nav className="flex flex-col gap-2">
-                     <button onClick={() => { onNavigate('pricing'); setIsDrawerOpen(false); }} className="text-left py-2 text-text-muted hover:text-white active:translate-x-1 transition-transform">Planos</button>
-                     <button onClick={() => { onNavigate('about'); setIsDrawerOpen(false); }} className="text-left py-2 text-text-muted hover:text-white active:translate-x-1 transition-transform">Sobre Nós</button>
-                     <button onClick={() => { onNavigate('contact'); setIsDrawerOpen(false); }} className="text-left py-2 text-text-muted hover:text-white active:translate-x-1 transition-transform">Contato</button>
+                     <button onClick={() => { onNavigate('planos'); setIsDrawerOpen(false); }} className="text-left py-2 text-text-muted hover:text-white active:translate-x-1 transition-transform">Planos</button>
+                     <button onClick={() => { onNavigate('sobre'); setIsDrawerOpen(false); }} className="text-left py-2 text-text-muted hover:text-white active:translate-x-1 transition-transform">Sobre Nós</button>
+                     <button onClick={() => { onNavigate('contato'); setIsDrawerOpen(false); }} className="text-left py-2 text-text-muted hover:text-white active:translate-x-1 transition-transform">Contato</button>
                  </nav>
               </div>
 

@@ -18,7 +18,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div>
             <div 
               className="flex flex-col mb-6 cursor-pointer" 
-              onClick={() => onNavigate('home')}
+              onClick={() => onNavigate('/')}
             >
               <div className="text-2xl font-extrabold text-white tracking-wider font-sans">
                 KADOSH <span className="text-secondary font-light">DESIGN</span>
@@ -34,10 +34,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div>
             <h4 className="text-white font-bold mb-6 text-lg">Empresa</h4>
             <ul className="space-y-3 text-sm text-text-muted">
-              <li><button onClick={() => onNavigate('about')} className="hover:text-primary transition-colors text-left">Sobre Nós</button></li>
-              <li><button onClick={() => onNavigate('contact')} className="hover:text-primary transition-colors text-left">Entre em Contato</button></li>
-              <li><button onClick={() => onNavigate('pricing')} className="hover:text-primary transition-colors text-left">Planos de Assinatura</button></li>
-              <li><button onClick={() => onNavigate('contact')} className="hover:text-primary transition-colors text-left">Trabalhe Conosco</button></li>
+              <li><button onClick={() => onNavigate('sobre')} className="hover:text-primary transition-colors text-left">Sobre Nós</button></li>
+              <li><button onClick={() => onNavigate('contato')} className="hover:text-primary transition-colors text-left">Entre em Contato</button></li>
+              <li><button onClick={() => onNavigate('planos')} className="hover:text-primary transition-colors text-left">Planos de Assinatura</button></li>
+              <li><button onClick={() => onNavigate('contato')} className="hover:text-primary transition-colors text-left">Trabalhe Conosco</button></li>
             </ul>
           </div>
 
@@ -45,10 +45,10 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div>
             <h4 className="text-white font-bold mb-6 text-lg">Termos</h4>
             <ul className="space-y-3 text-sm text-text-muted">
-              <li><button onClick={() => onNavigate('terms')} className="hover:text-primary transition-colors text-left">Termos de Serviço</button></li>
-              <li><button onClick={() => onNavigate('terms')} className="hover:text-primary transition-colors text-left">Política de Privacidade</button></li>
-              <li><button onClick={() => onNavigate('terms')} className="hover:text-primary transition-colors text-left">Licença de Uso</button></li>
-              <li><button onClick={() => onNavigate('terms')} className="hover:text-primary transition-colors text-left">Política de Reembolso</button></li>
+              <li><button onClick={() => onNavigate('termos')} className="hover:text-primary transition-colors text-left">Termos de Serviço</button></li>
+              <li><button onClick={() => onNavigate('termos')} className="hover:text-primary transition-colors text-left">Política de Privacidade</button></li>
+              <li><button onClick={() => onNavigate('termos')} className="hover:text-primary transition-colors text-left">Licença de Uso</button></li>
+              <li><button onClick={() => onNavigate('termos')} className="hover:text-primary transition-colors text-left">Política de Reembolso</button></li>
             </ul>
           </div>
 

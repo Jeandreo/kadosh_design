@@ -114,7 +114,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
 
   const handleLogout = () => {
     logout();
-    onNavigate('home');
+    onNavigate('/');
   };
 
   const handleSaveProfile = async (e: React.FormEvent) => {
@@ -243,7 +243,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
                 </div>
                 {!isPremium && (
                     <button 
-                        onClick={() => onNavigate('pricing')}
+                        onClick={() => onNavigate('planos')}
                         className="text-xs bg-primary hover:bg-primary/90 text-white font-bold py-2 px-4 rounded transition-colors text-center shadow-lg shadow-primary/20"
                     >
                         Ver Planos
@@ -375,7 +375,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
                                 <div className="aspect-[4/5] w-full bg-black/20 rounded mb-4 overflow-hidden relative group">
                                     <img src={r.imageUrl} className="w-full h-full object-cover" alt={r.title} />
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                         <button onClick={() => onNavigate('home')} className="bg-white text-black px-4 py-2 rounded-full font-bold text-xs transform scale-95 group-hover:scale-100 transition-transform">Ver Arte</button>
+                                         <button onClick={() => onNavigate('/')} className="bg-white text-black px-4 py-2 rounded-full font-bold text-xs transform scale-95 group-hover:scale-100 transition-transform">Ver Arte</button>
                                     </div>
                                 </div>
                                 <h4 className="text-white font-bold text-sm truncate">{r.title}</h4>
@@ -414,7 +414,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
                          <button onClick={()=>setIsCancelModalOpen(true)} className="text-red-400 border border-red-500/30 hover:bg-red-500/10 px-6 py-3 rounded-lg text-sm font-medium transition-colors">Cancelar Assinatura</button>
                      )}
                      {!isPremium && (
-                         <button onClick={()=>onNavigate('pricing')} className="bg-primary text-white font-bold px-6 py-3 rounded-lg shadow-lg">Fazer Upgrade</button>
+                         <button onClick={()=>onNavigate('planos')} className="bg-primary text-white font-bold px-6 py-3 rounded-lg shadow-lg">Fazer Upgrade</button>
                      )}
                 </div>
             </div>
@@ -428,7 +428,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
     <div className="flex min-h-screen bg-background text-text-main font-sans">
       {/* Sidebar Desktop */}
       <aside className="w-[280px] bg-[rgba(24,26,27,0.95)] border-r border-white/5 fixed h-full flex flex-col z-20 hidden lg:flex backdrop-blur-md">
-        <div className="h-24 flex items-center px-8 border-b border-white/5 cursor-pointer" onClick={() => onNavigate('home')}>
+        <div className="h-24 flex items-center px-8 border-b border-white/5 cursor-pointer" onClick={() => onNavigate('/')}>
              <span className="font-bold text-white text-xl">KADOSH <span className="font-light text-secondary">DESIGN</span></span>
         </div>
         <nav className="flex-1 py-4 px-4 space-y-2">
@@ -479,7 +479,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({ onNavigate }) => {
            </div>
            
            <button 
-              onClick={() => onNavigate('home')}
+              onClick={() => onNavigate('/')}
               className="w-9 h-9 flex items-center justify-center rounded-full bg-white/5 text-text-muted hover:text-white hover:bg-white/10 transition-colors active:scale-95"
            >
                 <i className="fas fa-times text-lg"></i>
