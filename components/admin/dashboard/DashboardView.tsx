@@ -4,11 +4,14 @@ import { MetricCard } from './MetricCard';
 interface Props {
   totalDownloads: number;
   totalUsers: number;
+  subscriptionsData: number[];
+  churnData: number[];
 }
-
 export const DashboardView = ({
   totalDownloads,
   totalUsers,
+  subscriptionsData,
+  churnData,
 }: Props) => {
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto animate-[fadeIn_0.3s_ease-out]">
@@ -50,7 +53,10 @@ export const DashboardView = ({
       </div>
 
       {/* CHART */}
-      <DualLineChart />
+      <DualLineChart
+        subscriptionsData={subscriptionsData}
+        churnData={churnData}
+      />
     </div>
   );
 };

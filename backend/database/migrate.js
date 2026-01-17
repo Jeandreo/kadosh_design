@@ -15,6 +15,7 @@ export async function runMigrations() {
             quota_used INT DEFAULT 0,
             quota_total INT DEFAULT 1,
             subscription_expiry DATETIME,
+            canceled_at DATETIME,
             last_quota_reset DATE,
             auto_renew BOOLEAN DEFAULT TRUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

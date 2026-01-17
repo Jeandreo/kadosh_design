@@ -580,10 +580,12 @@ export const AdminDashboard = () => {
         <AdminHeader activeTab={activeTab} />
 
         {activeTab === 'dashboard' && (
-          <DashboardView
-            totalDownloads={adminData.totalDownloads}
-            totalUsers={adminData.users.length}
-          />
+            <DashboardView
+                totalDownloads={adminData.totalDownloads}
+                totalUsers={adminData.users.length}
+                subscriptionsData={adminData.subscriptionsData}
+                churnData={adminData.churnData}
+            />
         )}
 
         {activeTab === 'files' && (

@@ -172,7 +172,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
               </div>
             </div>
 
-            {mode === 'login' && (
+            {/* {mode === 'login' && (
               <div className="flex justify-end">
                 <button 
                   type="button"
@@ -182,7 +182,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
                   Esqueceu a senha?
                 </button>
               </div>
-            )}
+            )} */}
 
             <button 
               id="btnLoginSubmit"

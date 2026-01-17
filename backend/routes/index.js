@@ -13,6 +13,7 @@ import health       from './health.routes.js';
 import subscriptions from './subscriptions.routes.js';
 import webhooks     from './webhooks.routes.js';
 import checkout     from './checkout.routes.js';
+import metrics      from './metrics.routes.js';
 
 const router = Router();
 
@@ -29,5 +30,6 @@ router.use('/payments', payments);
 router.use('/subscriptions', subscriptions);
 router.use('/webhooks', webhooks);
 router.use('/checkout', checkout);
+router.use('/metrics', metrics);
 
 export default router;
