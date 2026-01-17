@@ -228,7 +228,7 @@ export const Header: React.FC<HeaderProps> = ({
                                         <i className="fas fa-tachometer-alt w-5 text-center mr-2 text-green-400"></i> Painel Admin
                                     </button>
                                   )}
-                                  <button onClick={() => { onNavigate('user-dashboard'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-white/5 hover:text-white transition-colors">
+                                  <button onClick={() => { onNavigate('dashboard'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-white/5 hover:text-white transition-colors">
                                       <i className="far fa-user-circle w-5 text-center mr-2"></i> Perfil / Dashboard
                                   </button>
                                   <button onClick={() => { onNavigate('planos'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-text-muted hover:bg-white/5 hover:text-white transition-colors">
@@ -360,7 +360,7 @@ export const Header: React.FC<HeaderProps> = ({
                       </div>
                   ) : (
                       <button 
-                         onClick={() => { onNavigate('user-dashboard'); setIsDrawerOpen(false); }}
+                         onClick={() => { onNavigate('dashboard'); setIsDrawerOpen(false); }}
                          className="w-full py-3 rounded-lg bg-white/5 hover:bg-white/10 text-white font-medium flex items-center justify-center gap-3 border border-white/5 active:scale-95"
                       >
                          <i className="fas fa-user-circle"></i> Minha Conta

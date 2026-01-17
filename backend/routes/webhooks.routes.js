@@ -51,8 +51,8 @@ router.post('/mercadopago', async (req, res) => {
      * Cria registro bruto do webhook recebido
      */
     const webhookLogEntry = {
-      received_at: new Date().toISOString(),
-      headers: req.headers,
+      // received_at: new Date().toISOString(),
+      // headers: req.headers,
       body: req.body,
     };
 
