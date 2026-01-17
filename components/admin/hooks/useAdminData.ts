@@ -12,6 +12,10 @@ export const useAdminData = () => {
   const [subscriptionsData, setSubscriptionsData] = useState<number[]>([]);
   const [churnData, setChurnData] = useState<number[]>([]);
 
+  const [revenue, setRevenue] = useState(0);
+  const [growth, setGrowth] = useState(0);
+
+
   const loadData = async () => {
     // 🔹 Resources
     const res = await getResources();
@@ -23,7 +27,7 @@ export const useAdminData = () => {
     setUsers(usr);
 
     // 🔹 Metrics (backend)
-    const { subscriptions, churn, days } = await getMetrics();
+    const { subscriptions, churn, days, revenue, growth } = await getMetrics();
 
     const subsArray = Array(days).fill(0);
     const churnArray = Array(days).fill(0);
@@ -50,6 +54,8 @@ export const useAdminData = () => {
 
     setSubscriptionsData(subsArray);
     setChurnData(churnArray);
+    setRevenue(revenue);
+    setGrowth(growth);
   };
 
   useEffect(() => {
@@ -62,6 +68,8 @@ export const useAdminData = () => {
     totalDownloads,
     subscriptionsData,
     churnData,
+    revenue,
+    growth,
     reload: loadData,
   };
 };

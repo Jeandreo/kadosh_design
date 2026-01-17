@@ -4,12 +4,16 @@ import { MetricCard } from './MetricCard';
 interface Props {
   totalDownloads: number;
   totalUsers: number;
+  revenue: number;
+  growth: number;
   subscriptionsData: number[];
   churnData: number[];
 }
 export const DashboardView = ({
   totalDownloads,
   totalUsers,
+  revenue,
+  growth,
   subscriptionsData,
   churnData,
 }: Props) => {
@@ -25,14 +29,14 @@ export const DashboardView = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <MetricCard
           label="Receita Mensal"
-          value="R$ 4.580,00"
+          value={`R$ ${revenue}`}
           icon="fa-dollar-sign"
           color="text-green-500"
         />
 
         <MetricCard
           label="Downloads Totais"
-          value={`${(totalDownloads / 1000).toFixed(1)}k`}
+          value={`${(totalDownloads / 1000).toFixed(3)}k`}
           icon="fa-cloud-download-alt"
           color="text-purple-500"
         />
@@ -46,7 +50,7 @@ export const DashboardView = ({
 
         <MetricCard
           label="Crescimento"
-          value="+12%"
+          value={`${growth > 0 ? '+' : ''}${growth}%`}
           icon="fa-arrow-trend-up"
           color="text-emerald-400"
         />

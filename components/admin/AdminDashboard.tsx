@@ -583,6 +583,8 @@ export const AdminDashboard = () => {
             <DashboardView
                 totalDownloads={adminData.totalDownloads}
                 totalUsers={adminData.users.length}
+                revenue={adminData.revenue}
+                growth={adminData.growth}
                 subscriptionsData={adminData.subscriptionsData}
                 churnData={adminData.churnData}
             />

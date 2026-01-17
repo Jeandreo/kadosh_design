@@ -9,39 +9,58 @@ router.get('/', checkDb, async (req, res) => {
   try {
     const days = Number(req.query.days) || 30;
 
-    // Subscriptions por dia
-    const [subscriptions] = await pool.query(
-      `
-      SELECT
-        DATE(created_at) AS day,
-        COUNT(*) AS total
+    // 1️⃣ Subscriptions por dia
+    const [subscriptions] = await pool.query(`
+      SELECT DATE(created_at) AS day, COUNT(*) AS total
       FROM users
       WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
       GROUP BY day
       ORDER BY day ASC
-      `,
-      [days]
-    );
+    `, [days]);
 
-    // Churn por dia
-    const [churn] = await pool.query(
-      `
-      SELECT
-        DATE(canceled_at) AS day,
-        COUNT(*) AS total
+    // 2️⃣ Churn por dia
+    const [churn] = await pool.query(`
+      SELECT DATE(canceled_at) AS day, COUNT(*) AS total
       FROM users
       WHERE canceled_at IS NOT NULL
         AND canceled_at >= DATE_SUB(CURDATE(), INTERVAL ? DAY)
       GROUP BY day
       ORDER BY day ASC
-      `,
-      [days]
-    );
+    `, [days]);
+
+    // 3️⃣ Receita mensal (MRR)
+    const [[revenue]] = await pool.query(`
+      SELECT COALESCE(SUM(amount), 0) AS total
+      FROM subscriptions
+      WHERE mp_status = 'authorized'
+    `);
+
+    // 4️⃣ Crescimento de usuários
+    const [[current]] = await pool.query(`
+      SELECT COUNT(*) AS total
+      FROM users
+      WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+    `);
+
+    const [[previous]] = await pool.query(`
+      SELECT COUNT(*) AS total
+      FROM users
+      WHERE created_at BETWEEN
+        DATE_SUB(CURDATE(), INTERVAL 60 DAY)
+        AND DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+    `);
+
+    const growth =
+      previous.total === 0
+        ? 100
+        : ((current.total - previous.total) / previous.total) * 100;
 
     res.json({
       subscriptions,
       churn,
-      days,
+      revenue: revenue.total,
+      growth: Number(growth.toFixed(1)),
+      days
     });
 
   } catch (err) {
@@ -49,5 +68,6 @@ router.get('/', checkDb, async (req, res) => {
     res.status(500).json({ message: 'Erro ao buscar métricas' });
   }
 });
+
 
 export default router;
