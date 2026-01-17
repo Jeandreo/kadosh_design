@@ -133,12 +133,40 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem('kadosh_mock_user', JSON.stringify(updatedUser));
   };
 
-  const cancelSubscription = async () => {
-      if (!user) return;
-      const updatedUser = { ...user, autoRenew: false };
-      setUser(updatedUser);
-      localStorage.setItem('kadosh_mock_user', JSON.stringify(updatedUser));
+  const cancelSubscription = async (): Promise<void> => {
+    if (!user) return;
+
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      throw new Error('Sessão expirada');
+    }
+
+    const res = await fetch(
+      `${API_URL}/api/subscriptions/me`,
+      {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!res.ok) {
+      const data = await res.json();
+      throw new Error(data.message || 'Erro ao cancelar assinatura');
+    }
+
+    // Atualiza estado local
+    setUser(prev =>
+      prev
+        ? {
+            ...prev,
+            autoRenew: false,
+          }
+        : prev
+    );
   };
+
 
   const registerDownload = async (
     resourceId: string

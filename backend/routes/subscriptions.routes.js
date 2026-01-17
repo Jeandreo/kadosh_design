@@ -3,9 +3,34 @@ import { Router } from 'express';
 import mp from '../services/mercadoPago.js';
 import createCheckDb from '../middlewares/checkDb.js';
 import { pool } from '../database/pool.js';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
 const checkDb = createCheckDb(pool);
+
+function auth(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader) {
+    return res.status(401).json({ message: 'Token não informado' });
+  }
+
+  const [, token] = authHeader.split(' ');
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = {
+      id: decoded.id,
+      role: decoded.role
+    };
+
+    return next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Token inválido' });
+  }
+}
+
 
 router.get('/', checkDb, async (req, res) => {
   try {
@@ -119,18 +144,70 @@ router.post('/', checkDb, async (req, res) => {
 
 
 
-router.delete('/:id', checkDb, async (req, res) => {
+router.delete('/me', checkDb, auth, async (req, res) => {
   try {
-    await mp.put(`/preapproval/${req.params.id}`, {
-      status: 'cancelled',
+    const userId = req.user.id;
+
+    // 1. Busca assinatura ativa do usuário
+    const [[subscription]] = await pool.query(
+      `
+      SELECT *
+      FROM subscriptions
+      WHERE user_id = ?
+        AND mp_status = 'authorized'
+      LIMIT 1
+      `,
+      [userId]
+    );
+
+    if (!subscription) {
+      return res.status(404).json({
+        message: 'Nenhuma assinatura ativa encontrada'
+      });
+    }
+
+    const preapprovalId = subscription.mp_preapproval_id;
+
+    // 2. Cancela no Mercado Pago
+    await mp.put(`/preapproval/${preapprovalId}`, {
+      status: 'cancelled'
     });
 
-    res.json({ message: 'Assinatura cancelada' });
+    // 3. Atualiza assinatura local
+    await pool.query(
+      `
+      UPDATE subscriptions
+      SET
+        mp_status = 'cancelled',
+        cancelled_at = NOW()
+      WHERE id = ?
+      `,
+      [subscription.id]
+    );
+
+    // 4. Atualiza usuário (desliga renovação)
+    await pool.query(
+      `
+      UPDATE users
+      SET auto_renew = FALSE
+      WHERE id = ?
+      `,
+      [userId]
+    );
+
+    res.json({
+      message: 'Renovação automática cancelada com sucesso'
+    });
+
   } catch (err) {
     console.error('MP CANCEL ERROR:', err.response?.data || err);
-    res.status(500).json({ message: 'Erro ao cancelar assinatura' });
+    res.status(500).json({
+      message: 'Erro ao cancelar assinatura'
+    });
   }
 });
+
+
 
 
 export default router;
