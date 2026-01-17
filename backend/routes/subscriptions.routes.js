@@ -73,6 +73,9 @@ router.post('/', checkDb, async (req, res) => {
     const DISCOUNT_EMAILS = [
       'jeandreofur@gmail.com',
       'pr.hudsonsoarez@gmail.com',
+      'test01@gmail.com',
+      'test02@gmail.com',
+      'test03@gmail.com',
     ];
 
     const transactionAmount = DISCOUNT_EMAILS.includes(user.email)
