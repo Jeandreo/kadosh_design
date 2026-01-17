@@ -42,15 +42,19 @@ export const Pricing: React.FC<PricingProps> = ({ onCheckout }) => {
     type: 'info'
   })
 
-  const hasActivePlan = !!user && user.plan !== 'free'
+  const hasBlockingSubscription =
+    !!user &&
+    user.plan !== 'free' &&
+    user.autoRenew === true
 
+  
   function handleCheckout(plan: Plan) {
     if (!user) {
       onCheckout(plan)
       return
     }
 
-    if (hasActivePlan) {
+    if (hasBlockingSubscription) {
       setToast({
         visible: true,
         message:
