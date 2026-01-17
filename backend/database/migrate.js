@@ -14,7 +14,7 @@ export async function runMigrations() {
             plan ENUM('free', 'volunteer', 'ministry', 'premium_annual') DEFAULT 'free',
             quota_used INT DEFAULT 0,
             quota_total INT DEFAULT 1,
-            subscription_expiry BIGINT,
+            subscription_expiry DATETIME,
             last_quota_reset DATE,
             auto_renew BOOLEAN DEFAULT TRUE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

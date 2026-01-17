@@ -27,6 +27,23 @@ router.post('/', checkDb, async (req, res) => {
   
   try {
 
+    // 1. Busca assinatura existente
+    const [[existing]] = await pool.query(
+      `
+      SELECT *
+      FROM subscriptions
+      WHERE user_id = ?
+      `,
+      [user.id]
+    );
+
+    // 2. Se existe assinatura ativa, bloqueia
+    if (existing && existing.mp_status === 'authorized') {
+      return res.status(400).json({
+        message: 'Você já possui uma assinatura ativa. Cancele antes de assinar outro plano.'
+      });
+    }
+
     // regra de preço especial
     const DISCOUNT_EMAILS = [
       'jeandreofur@gmail.com',
@@ -50,12 +67,6 @@ router.post('/', checkDb, async (req, res) => {
       },
       back_url: `${process.env.MP_CALLBACK_URL}/api/checkout/success`,
     });
-
-    // verifica se já existe assinatura
-    const [[existing]] = await pool.query(
-      'SELECT id FROM subscriptions WHERE user_id = ?',
-      [user.id]
-    );
 
     if (existing) {
       // UPDATE

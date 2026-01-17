@@ -42,48 +42,86 @@ function saveWebhookLog(logEntry) {
   );
 }
 
+function calculateExpiry(billing) {
+  const now = new Date()
+
+  if (billing === 'monthly') {
+    now.setMonth(now.getMonth() + 1)
+  }
+
+  if (billing === 'annual') {
+    now.setFullYear(now.getFullYear() + 1)
+  }
+
+  return now;
+  
+}
+
 router.post('/mercadopago', async (req, res) => {
-  // responde imediatamente para evitar retries do Mercado Pago
-  res.sendStatus(200);
+  res.sendStatus(200)
 
   try {
-    /**
-     * Cria registro bruto do webhook recebido
-     */
-    const webhookLogEntry = {
-      // received_at: new Date().toISOString(),
-      // headers: req.headers,
-      body: req.body,
-    };
+    let { type, action, data } = req.body
 
-    saveWebhookLog(webhookLogEntry);
-
-    const { type, data } = req.body;
+    // Log simplificado
+    saveWebhookLog({
+      at: new Date().toISOString(),
+      type,
+      action,
+      id: data?.id
+    })
 
     /**
-     * Processa apenas eventos relacionados a assinaturas
+     * 1. PAGAMENTO DA ASSINATURA (EVENTO PRINCIPAL)
      */
-    if (type !== 'subscription_preapproval' && type !== 'preapproval') {
-      return;
-    }
+    if (type === 'subscription_authorized_payment' && action === 'created') {
+      const authorizedPaymentId = data.id
 
-    const preapprovalId = data?.id;
-    if (!preapprovalId) {
-      return;
-    }
+      // Busca pagamento autorizado
+      const { data: payment } = await mercadoPagoClient.get(`/authorized_payments/${authorizedPaymentId}`)
 
-    /**
-     * Consulta o estado real da assinatura no Mercado Pago
-     */
-    const { data: mercadoPagoSubscription } =
-      await mercadoPagoClient.get(`/preapproval/${preapprovalId}`);
+      if (payment.payment?.status !== 'approved') {
+        return
+      }
 
-    const subscriptionStatus = mercadoPagoSubscription.status;
+      const preapprovalId = payment.preapproval_id
 
-    /**
-     * Atualiza assinatura autorizada
-     */
-    if (subscriptionStatus === 'authorized') {
+      // Busca assinatura no banco
+      const [[subscription]] = await pool.query(
+        `
+        SELECT s.*, p.billing_period, p.id AS plan_code
+        FROM subscriptions s
+        JOIN plans p ON p.id = s.plan_id
+        WHERE s.mp_preapproval_id = ?
+        `,
+        [preapprovalId]
+      )
+
+      if (!subscription) return
+
+      // Calcula expiração
+      const expiry = calculateExpiry(subscription.billing)
+
+      // Atualiza usuário
+      await pool.query(
+        `
+        UPDATE users
+        SET
+          plan = ?,
+          quota_total = ?,
+          subscription_expiry = ?,
+          auto_renew = TRUE
+        WHERE id = ?
+        `,
+        [
+          subscription.plan_id,
+          subscription.billing === 'monthly' ? 7 : 7,
+          expiry,
+          subscription.user_id
+        ]
+      )
+
+      // Atualiza assinatura
       await pool.query(
         `
         UPDATE subscriptions
@@ -93,28 +131,38 @@ router.post('/mercadopago', async (req, res) => {
         WHERE mp_preapproval_id = ?
         `,
         [preapprovalId]
-      );
+      )
+
+      return
     }
 
     /**
-     * Atualiza assinatura cancelada, pausada ou rejeitada
+     * 2. EVENTOS DE STATUS DA ASSINATURA (secundários)
      */
-    if (['cancelled', 'paused', 'rejected'].includes(subscriptionStatus)) {
-      await pool.query(
-        `
-        UPDATE subscriptions
-        SET
-          mp_status = ?,
-          cancelled_at = NOW()
-        WHERE mp_preapproval_id = ?
-        `,
-        [subscriptionStatus, preapprovalId]
-      );
+    if (type === 'subscription_preapproval' || type === 'preapproval') {
+      const preapprovalId = data?.id
+      if (!preapprovalId) return
+ 
+      const { data: mpSubscription } = await mercadoPagoClient.get(`/preapproval/${preapprovalId}`)
+
+      const status = mpSubscription.status
+
+      if (['cancelled', 'paused', 'rejected'].includes(status)) {
+        await pool.query(
+          `
+          UPDATE subscriptions
+          SET mp_status = ?, cancelled_at = NOW()
+          WHERE mp_preapproval_id = ?
+          `,
+          [status, preapprovalId]
+        )
+      }
     }
+
   } catch (error) {
-    // nunca quebrar o fluxo do webhook
-    console.error('MP WEBHOOK ERROR:', error);
+    console.error('MP WEBHOOK ERROR:', error)
   }
-});
+})
+
 
 export default router;
