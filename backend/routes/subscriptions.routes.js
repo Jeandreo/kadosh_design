@@ -189,7 +189,8 @@ router.delete('/me', checkDb, auth, async (req, res) => {
     await pool.query(
       `
       UPDATE users
-      SET auto_renew = FALSE
+      SET auto_renew = FALSE,
+        canceled_at = NOW()
       WHERE id = ?
       `,
       [userId]
