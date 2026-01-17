@@ -13,8 +13,8 @@ interface AuthContextType {
   unreadCount: number;
   categories: Category[]; 
   banners: Banner[]; 
-  login: (email: string, password: string) => Promise<boolean>;
-  signup: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  signup: (name: string, email: string, password: string) => Promise<{ success: boolean; message?: string }>;
   loginWithGoogle: () => Promise<boolean>;
   logout: () => void;
   upgradeSubscription: (newPlan: UserPlan) => void;
@@ -84,37 +84,58 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const API_URL = import.meta.env.VITE_API_URL;
   const login = async (email: string, password: string) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    localStorage.setItem('auth_token', data.token);
-    setUser(data.user);
+      if (!res.ok) {
+        // Retorna erro específico da API se disponível
+        return { 
+          success: false, 
+          message: data.message || 'Credenciais inválidas' 
+        };
+      }
 
-    return true;
+      localStorage.setItem('auth_token', data.token);
+      setUser(data.user);
+
+      return { success: true };
+    } catch (error) {
+      console.error('Login error:', error);
+      return { 
+        success: false, 
+        message: 'Erro de conexão. Tente novamente.' 
+      };
+    }
   };
+
 
   const signup = async (
     name: string,
     email: string,
     password: string
-  ): Promise<boolean> => {
+  ): Promise<{ success: boolean; message?: string }> => {
     try {
       const { token, user } = await signupRequest(name, email, password);
 
       localStorage.setItem('auth_token', token);
       setUser(user);
 
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.error(error);
-      return false;
+      return { 
+        success: false, 
+        message: error.message || 'Erro ao criar conta. Tente novamente.' 
+      };
     }
   };
+
 
   const logout = async () => {
     localStorage.removeItem('auth_token');

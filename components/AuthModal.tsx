@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,6 +14,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
   const { login, signup } = useAuth();
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>('');
   
   // Form State
   const [name, setName] = useState('');
@@ -27,6 +27,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
       setEmail('');
       setPassword('');
       setName('');
+      setError('');
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'auto';
@@ -40,28 +41,36 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     setIsLoading(true);
 
     try {
-        let success = false;
-        if (mode === 'login') {
-            success = await login(email, password);
-        } else {
-            success = await signup(name, email, password);
-        }
+      let result;
+      
+      if (mode === 'login') {
+        result = await login(email, password);
+      } else {
+        result = await signup(name, email, password);
+      }
 
-        if (success) {
-            onSuccess();
-        }
-    } catch (err) {
-        console.error("Auth error", err);
+      if (result.success) {
+        onSuccess();
+        onClose();
+      } else {
+        // Exibe mensagem de erro específica ou padrão
+        setError(result.message || 'Erro ao realizar operação');
+      }
+    } catch (err: any) {
+      console.error("Auth error", err);
+      setError('Erro inesperado. Tente novamente.');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   };
 
   const toggleMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
+    setError(''); // Limpa erro ao trocar de modo
   };
 
   return (
@@ -95,6 +104,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
             </p>
           </div>
 
+          {/* Mensagem de Erro */}
+          {error && (
+            <div className="mb-6 p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <div className="flex items-center gap-2 text-red-400 text-sm">
+                <i className="fas fa-exclamation-circle"></i>
+                <span>{error}</span>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {mode === 'signup' && (
               <div className="space-y-1">
@@ -110,6 +129,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    disabled={isLoading}
                   />
                 </div>
               </div>
@@ -129,6 +149,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
@@ -146,13 +167,20 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  disabled={isLoading}
                 />
               </div>
             </div>
 
             {mode === 'login' && (
               <div className="flex justify-end">
-                <a href="#" className="text-xs text-secondary hover:text-white transition-colors">Esqueceu a senha?</a>
+                <button 
+                  type="button"
+                  className="text-xs text-secondary hover:text-white transition-colors"
+                  disabled={isLoading}
+                >
+                  Esqueceu a senha?
+                </button>
               </div>
             )}
 
@@ -160,14 +188,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
               id="btnLoginSubmit"
               type="submit" 
               disabled={isLoading}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98] mt-6 flex items-center justify-center gap-2"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3.5 rounded-lg shadow-lg shadow-primary/20 transition-all transform active:scale-[0.98] mt-6 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
-                  <>
-                    <i className="fas fa-spinner fa-spin"></i> Processando...
-                  </>
+                <>
+                  <i className="fas fa-spinner fa-spin"></i> Processando...
+                </>
               ) : (
-                  mode === 'login' ? 'Entrar' : 'Cadastrar'
+                mode === 'login' ? 'Entrar' : 'Cadastrar'
               )}
             </button>
           </form>
@@ -177,7 +205,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, initialMode, onClo
               {mode === 'login' ? 'Não tem conta? ' : 'Já tem conta? '}
               <button 
                 onClick={toggleMode}
-                className="text-secondary font-bold hover:text-white transition-colors underline decoration-secondary/30 underline-offset-4"
+                className="text-secondary font-bold hover:text-white transition-colors underline decoration-secondary/30 underline-offset-4 disabled:opacity-50"
+                disabled={isLoading}
               >
                 {mode === 'login' ? 'Cadastre-se aqui' : 'Entrar'}
               </button>
